@@ -6,6 +6,8 @@ class API::V1::EventsController < ApplicationController
   before_action :set_event, only: [:show, :update, :destroy]
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
+  # todo es casi lo mismo que bars_controller. existen cambios de nombres de variables mas q nada!!!
+
   # GET /api/v1/events/:id
   def show
     if @event.image.attached?

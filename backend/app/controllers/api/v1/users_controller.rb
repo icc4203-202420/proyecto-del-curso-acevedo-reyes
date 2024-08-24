@@ -1,6 +1,6 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
-  before_action :set_user, only: [:show, :update] 
+  before_action :set_user, only: [:show, :update, :destroy, :friendships, :create_friendship] 
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
   
   def index
