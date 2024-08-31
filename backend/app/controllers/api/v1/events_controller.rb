@@ -8,6 +8,18 @@ class API::V1::EventsController < ApplicationController
 
   # todo es casi lo mismo que bars_controller. existen cambios de nombres de variables mas q nada!!!
 
+  def index
+    @events = Event.all
+    render json: { events: @events }, status: :ok
+  end
+
+  # GET /api/v1/bars/:bar_id/events
+  def bars_events_index
+    @events = Event.where(bar_id: params[:bar_id])
+    render json: { events: @events }, status: :ok
+  end
+
+
   # GET /api/v1/events/:id
   def show
     if @event.image.attached?
