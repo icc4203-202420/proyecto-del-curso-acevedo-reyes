@@ -3,21 +3,17 @@ import { Tabs, Tab, Box } from '@mui/material';
 import BarsList from './BarsList';
 import BeersList from './BeersList';
 import ProfilesList from './ProfilesList';
-import SearchAppBar from './SearchAppBar';
 
-function SearchTabs() {
+function SearchTabs({ searchKeywords, setSearchKeywords }) { // Acepta props de búsqueda
   const [selectedTab, setSelectedTab] = useState(0);
-  const [searchKeywords, setSearchKeywords] = useState('');
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);
-    setSearchKeywords(''); // Clear search when switching tabs
-  };
+    //setSearchKeywords(''); // Limpiar la búsqueda al cambiar de pestañas
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
-      <SearchAppBar searchKeywords={searchKeywords} setSearchKeywords={setSearchKeywords} />
-
       <Tabs value={selectedTab} onChange={handleTabChange} centered>
         <Tab label="Bares" />
         <Tab label="Cervezas" />
@@ -34,3 +30,4 @@ function SearchTabs() {
 }
 
 export default SearchTabs;
+
