@@ -5,6 +5,7 @@ import FixedBottomNav from './components/FixedBottomNav';
 import SearchTabs from './components/SearchTabs';
 import BarDetails from './components/BarDetails';
 import BeerDetails from './components/BeerDetails';
+import UserInfo from './components/UserInfo';
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
         <Route path="/search" element={<SearchTabs />} />
         <Route path="/bars/:barId" element={<BarDetails />} />
         <Route path="/beers/:beerId" element={<BeerDetails />} />
+        <Route path="/user" element={<UserInfo />} />
+
       </Routes>
     </>
   );
