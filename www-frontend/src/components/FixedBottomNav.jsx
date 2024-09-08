@@ -21,7 +21,7 @@ export default function FixedBottomNav() {
         }}
         >
 
-          <BottomNavigationAction icon={<PersonOutlinedIcon />}  component={Link} to="/user"/>
+          <BottomNavigationAction icon={<PersonOutlinedIcon />} component={Link} to="/"/>
           <BottomNavigationAction icon={<LocationOnIcon />} component={Link} to="/"/>
           <BottomNavigationAction icon={<BookmarkBorderOutlinedIcon />} />
         
