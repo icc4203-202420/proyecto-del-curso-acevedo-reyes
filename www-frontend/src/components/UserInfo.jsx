@@ -8,11 +8,11 @@ function UserInfo() {
   const navigate = useNavigate(); // Hook for navigation
 
   const handleRegister = () => {
-    navigate('/'); // Redirect to the Register page
+    navigate('/sign-in'); // Redirect to the Register page
   };
 
   const handleLogin = () => {
-    navigate('/'); // Redirect to the Login page
+    navigate('/log-in'); // Redirect to the Login page
   };
 
   return (
