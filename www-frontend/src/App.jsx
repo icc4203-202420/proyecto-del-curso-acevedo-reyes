@@ -4,6 +4,7 @@ import Home from './components/Home';
 import FixedBottomNav from './components/FixedBottomNav';
 import SearchTabs from './components/SearchTabs';
 import BarDetails from './components/BarDetails';
+import UserInfo from './components/UserInfo';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchTabs />} />
         <Route path="/bars/:barId" element={<BarDetails />} />
+        <Route path="/user" element={<UserInfo />} />
       </Routes>
     </>
   );
