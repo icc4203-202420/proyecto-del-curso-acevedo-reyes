@@ -7,27 +7,41 @@ class API::V1::BeersController < ApplicationController
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   # GET /beers
+ 
   def index
-    @beers = Beer.all
-    render json: { beers: @beers }, status: :ok
+    @beers = Beer.includes(brand: :brewery).all
+    render json: {
+      beers: @beers.as_json(include: {
+        brand: {
+          include: { brewery: { only: [:id, :name] } },
+          only: [:id, :name]
+        }
+      })
+    }, status: :ok
   end
 
-  # def index
-  #   @beers = Rails.cache.fetch("beers", expires_in: 12.hours) do
-  #     Beer.includes(:brand, :brewery).all
-  #   end
-  #   render json: @beers
-  # end
-  
   # GET /beers/:id
   def show
     if @beer.image.attached?
-      render json: @beer.as_json.merge({ 
-        image_url: url_for(@beer.image), 
-        thumbnail_url: url_for(@beer.thumbnail)}),
-        status: :ok
+      render json: @beer.as_json(include: {
+        brand: {
+          include: { brewery: { only: [:id, :name] } },
+          only: [:id, :name]
+        }
+      }).merge({
+        image_url: url_for(@beer.image),
+        thumbnail_url: url_for(@beer.thumbnail)
+      }),
+      status: :ok
     else
-      render json: { beer: @beer.as_json }, status: :ok
+      render json: {
+        beer: @beer.as_json(include: {
+          brand: {
+            include: { brewery: { only: [:id, :name] } },
+            only: [:id, :name]
+          }
+        })
+      }, status: :ok
     end 
   end
 

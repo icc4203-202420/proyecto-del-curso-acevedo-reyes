@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Box, Toolbar, InputBase, alpha } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled } from '@mui/material/styles';
-
+import { useNavigate } from 'react-router-dom'; 
 // Componentes estilizados
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -45,6 +45,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+
 function SearchAppBar({ searchKeywords, setSearchKeywords }) {
   const handleInputChange = (event) => {
     setSearchKeywords(event.target.value);
@@ -55,7 +56,7 @@ function SearchAppBar({ searchKeywords, setSearchKeywords }) {
       <AppBar position="static" sx={{ bgcolor: 'lightgray' }}>
         <Toolbar>
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Search sx={{ bgcolor: 'white', width: '60%', display: 'flex', alignItems: 'center' }}>
+            <Search sx={{ bgcolor: 'white', width: '60%', display: 'flex', alignItems: 'center'}}>
               <SearchIconWrapper>
               </SearchIconWrapper>
               <StyledInputBase

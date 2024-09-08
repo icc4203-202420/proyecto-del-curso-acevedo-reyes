@@ -7,6 +7,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import placeHolder from '../assets/placeholder.jpg';
 
+
 function BeerDetails() {
   const { beerId } = useParams();
   const [beer, setBeer] = useState(null);
