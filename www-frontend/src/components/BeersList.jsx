@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, CircularProgress, Box, Grid } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Typography, CircularProgress, Box } from '@mui/material';
 import axios from 'axios';
-import placeHolder from '../assets/placeholder.jpg';
 
-function BeersList({ searchKeywords }) {
+// esto ojala hubiera sido un solo componente (junto a BarsList),
+// pero lo hare para la proxima lo juro!!
+
+function BeersList({searchKeywords}) {
   const [beers, setBeers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,7 +22,7 @@ function BeersList({ searchKeywords }) {
       });
   }, []);
 
-  const filteredBeers = beers.filter(beer =>
+  const filteredBeers = beers.filter(beer => 
     beer.name.toLowerCase().includes(searchKeywords.toLowerCase())
   );
 
@@ -29,32 +30,12 @@ function BeersList({ searchKeywords }) {
   if (error) return <Typography color="error">Failed to load beers.</Typography>;
 
   return (
-    <Box sx={{ padding: 2 }}>
-      {filteredBeers.length === 0 ? (
-        <Typography variant="h6" align="center">
-          No beers found.
+    <Box>
+      {filteredBeers.map(beer => (
+        <Typography key={beer.id} variant="h6">
+          {beer.name}
         </Typography>
-      ) : (
-        filteredBeers.map(beer => (
-          <Grid container spacing={2} alignItems="center" key={beer.id} sx={{ mb: 3 }}>
-            <Grid item>
-              <Box>
-                <img src={placeHolder} alt={`${beer.name} image`} style={{ width: '50px', height: 'auto' }} />
-              </Box>
-            </Grid>
-            <Grid item xs alignItems = "center">
-              <Link
-                to={`/beers/${beer.id}`}
-                style={{ textDecoration: 'none' }}
-              >
-                <Typography variant="h6" fontWeight="bold">
-                  {beer.name}
-                </Typography>
-              </Link>
-            </Grid>
-          </Grid>
-        ))
-      )}
+      ))}
     </Box>
   );
 }

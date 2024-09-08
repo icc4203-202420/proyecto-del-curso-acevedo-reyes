@@ -4,7 +4,6 @@ import Home from './components/Home';
 import FixedBottomNav from './components/FixedBottomNav';
 import SearchTabs from './components/SearchTabs';
 import BarDetails from './components/BarDetails';
-import BeerDetails from './components/BeerDetails';
 
 function App() {
   return (
@@ -15,8 +14,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchTabs />} />
         <Route path="/bars/:barId" element={<BarDetails />} />
+<<<<<<< HEAD
         <Route path="/beers/:beerId" element={<BeerDetails />} />
         
+=======
+>>>>>>> parent of afc515c (feat: fixed searchbar)
       </Routes>
     </>
   );

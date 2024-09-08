@@ -1,9 +1,10 @@
 import React from 'react';
+import styled from '@mui/material/styles/styled'; //esto se cayo a ultimo momento en los test lo odio!!
 import { AppBar, Box, Toolbar, InputBase, alpha } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { styled } from '@mui/material/styles';
 
-// Componentes estilizados
+// codigo sacado descaradamente de https://mui.com/material-ui/react-app-bar/
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -14,8 +15,6 @@ const Search = styled('div')(({ theme }) => ({
   marginRight: theme.spacing(2),
   marginLeft: 0,
   width: '100%',
-  display: 'flex',
-  alignItems: 'center',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(3),
     width: 'auto',
@@ -33,7 +32,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
+  
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
@@ -52,21 +51,23 @@ function SearchAppBar({ searchKeywords, setSearchKeywords }) {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ bgcolor: 'lightgray' }}>
+      <AppBar position="static" sx={{ bgcolor: "lightgray" }}>
         <Toolbar>
-          <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Search sx={{ bgcolor: 'white', width: '60%', display: 'flex', alignItems: 'center' }}>
-              <SearchIconWrapper>
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Introduzca su búsqueda"
-                inputProps={{ 'aria-label': 'search' }}
-                value={searchKeywords}
-                onChange={handleInputChange}
-              />
-            </Search>
-            <SearchIcon />
-          </Box>
+          
+          <Search sx={{ bgcolor: "white" }}>
+            
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            
+            <StyledInputBase
+              placeholder = "Introduzca su búsqueda"
+              inputProps  = {{ 'aria-label': 'search' }}
+              value       = {searchKeywords}
+              onChange    = {handleInputChange}
+            />
+          
+          </Search>
         </Toolbar>
       </AppBar>
     </Box>
