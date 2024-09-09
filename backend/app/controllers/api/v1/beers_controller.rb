@@ -7,7 +7,6 @@ class API::V1::BeersController < ApplicationController
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   # GET /beers
- 
   def index
     @beers = Beer.includes(brand: :brewery).all
     render json: {
@@ -27,6 +26,12 @@ class API::V1::BeersController < ApplicationController
         brand: {
           include: { brewery: { only: [:id, :name] } },
           only: [:id, :name]
+        },
+        reviews: {
+          include: { 
+            user: { only: [:id, :name] }
+          },
+          only: [:id, :text, :rating, :created_at]
         }
       }).merge({
         image_url: url_for(@beer.image),
@@ -39,10 +44,16 @@ class API::V1::BeersController < ApplicationController
           brand: {
             include: { brewery: { only: [:id, :name] } },
             only: [:id, :name]
+          },
+          reviews: {
+            include: { 
+              user: { only: [:id, :name] }
+            },
+            only: [:id, :text, :rating, :created_at]
           }
         })
       }, status: :ok
-    end 
+    end
   end
 
   # POST /beers

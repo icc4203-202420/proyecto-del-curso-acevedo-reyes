@@ -7,17 +7,18 @@ import CreateIcon from '@mui/icons-material/Create';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import placeHolder from '../assets/placeholder.jpg';
 
-
 function BeerDetails() {
   const { beerId } = useParams();
   const [beer, setBeer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:3001/api/v1/beers/${beerId}`)
       .then(response => {
         setBeer(response.data.beer);
+        setReviews(response.data.reviews); // Obtener las reviews
         setLoading(false);
       })
       .catch(error => {
@@ -86,12 +87,20 @@ function BeerDetails() {
             )}
           </>
         )}
-        <hr></hr>
-        <Box display="flex" justifyContent="center" mb={2}>
-            <Star fontSize='medium'/>
-            <Typography variant="h5" align="center" paragraph>
-                 Reviews de usuarios
-              </Typography>
+        <hr />
+
+        <Box display="flex" justifyContent="center" alignItems="center" mb={2}>
+          <Star fontSize='medium' />
+          <Typography
+            variant="h5"
+            align="center"
+            paragraph
+            component={RouterLink}
+            to={`/beer-review/${beerId}`}
+            sx={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit', marginLeft: 1 }}
+          >
+            Reviews de usuarios
+          </Typography>
         </Box>
       </Box>
     </>
