@@ -9,42 +9,41 @@ import  useAxios  from 'axios-hooks';
 import { Formik, Form, Field } from 'formik'; // Para el manejo de formularios
 import * as Yup from 'yup'; // Para la validación de formularios
 import Toolbar from '@mui/material/Toolbar';
+import qs from 'qs'
 
 // Configuración de axios con axios-hooks
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 const validationSchema = Yup.object({
+  email: Yup.string().email('Email invalido').required('El email es requerido'),
   first_name: Yup.string().required('Tu nombre es requerido'),
   last_name: Yup.string().required('Tu apellido es requerido'),
-  email: Yup.string().email('Email invalido').required('El email es requerido'),
   handle: Yup.string().required('Tu handle es requerido'),
   password: Yup.string().required('La contraseña es requerida'),
+  //password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Las contraseñas deben coincidir'),
   //line1, city, country no son requeridos
-  line1: Yup.string(),
-  city: Yup.string(),
-  country: Yup.string(),
+  //line1: Yup.string(),
+  //city: Yup.string(),
+  //country: Yup.string(),
 });
 
 const initialValues = {
+  email: '',
   first_name: '',
   last_name: '',
-  email: '',
   handle: '',
   password: '',
-  line1: '',
-  city: '',
-  country: '',
+  //password_confirmation: '',
+  //line1: '',
+  //city: '',
+  //country: '',
 };
 
-function SignIn() {
+function SignUp() {
   
   const navigate = useNavigate();
   const [serverError, setServerError] = React.useState('');
   const [signupSuccess, setSignupSuccess] = React.useState(false);
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
 
   const handleBack = () => {
     navigate('/user'); // Redirige a "/user" al hacer clic en "Volver"
@@ -62,22 +61,41 @@ function SignIn() {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await executePost({ data: values });
+      const response = await executePost({
+        data: {
+          user: {
+            email: values.email,
+            first_name: values.first_name,
+            last_name: values.last_name,
+            handle: values.handle,
+            password: values.password,
+            //password_confirmation: values.password_confirmation,
+            //line1: values.line1,
+            //city: values.city,
+            //country: values.country,
+          }
+        }
+      });
       console.log(response);
-      const receivedToken = response.headers['authorization'];
-      console.log('usuario registrado!', response.data.status.data.user.id);
+      setTimeout(() => {
+        navigate('/log-in');
+      }, 1000);
 
-      if (receivedToken) {
-        localStorage.setItem('token', receivedToken);
-        setSignupSuccess(true);
+      //const receivedToken = response.headers['authorization'];
+      //console.log('usuario registrado!', response.data.status.data.user.id);
+      //const receivedToken = response.data.status.data.token;
 
-        setTimeout(() => {
-          navigate('/log-in');
-        }, 1000);
-      }
+      //if (receivedToken) {
+      //  console.log('token recibido!:', receivedToken);
+      //  localStorage.setItem('token', receivedToken);
+      //  setSignupSuccess(true);
+
+      //  setTimeout(() => {
+      //    navigate('/log-in');
+      //  }, 1000);
+      //}
     }
     catch (error) {
-      setSubmitting(false);
 
       if (error.response && error.response.status === 401) {
         setServerError('Credenciales incorrectas');
@@ -85,13 +103,16 @@ function SignIn() {
       else {
         setServerError('Error en el servidor xdlol..');
       }
+      console.error("Error durante la funcion SignUp:", error)
+    }
+    finally {
+      setSubmitting(false);
     }
   };
 
   return (
     <Box
       className="user-info-container"
-      component="form"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -110,73 +131,88 @@ function SignIn() {
       </Typography>
 
       <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
+        initialValues    = {initialValues}
+        validationSchema = {validationSchema}
+        onSubmit         = {handleSubmit}
       >
         {({ isSubmitting, errors, touched }) => (
           <Form>
+
             <Field
-              as={TextField}
-              id="first_name"
-              label="Nombre"
-              variant="outlined"
-              name="first_name"
+              as         = {TextField}
+              id         = "email"
+              label      = "Correo Electrónico"
+              variant    = "outlined"
+              name       = "email"
               fullWidth
-              error   = {touched.first_name && Boolean(errors.first_name)}
-              helperText = {touched.first_name && errors.first_name}
-              margin  = "normal"
-            />
-            
-            <Field
-              as={TextField}
-              id="last_name"
-              label="Apellido"
-              variant="outlined"
-              name="last_name"
-              fullWidth
-              error   = {touched.last_name && Boolean(errors.last_name)}
-              helperText = {touched.last_name && errors.last_name}
-              margin  = "normal"
-            />
-            
-            <Field
-              as={TextField}
-              id="email"
-              label="Correo Electrónico"
-              variant="outlined"
-              name="email"
-              fullWidth
-              error   = {touched.email && Boolean(errors.email)}
+              error      = {touched.email && Boolean(errors.email)}
               helperText = {touched.email && errors.email}
-              margin  = "normal"
+              margin     = "normal"
+            />
+
+            <Field
+              as         = {TextField}
+              id         = "first_name"
+              label      = "Nombre"
+              variant    = "outlined"
+              name       = "first_name"
+              fullWidth
+              error      = {touched.first_name && Boolean(errors.first_name)}
+              helperText = {touched.first_name && errors.first_name}
+              margin     = "normal"
             />
             
             <Field
-              as={TextField}
-              id="handle"
-              label="Nombre de Usuario"
-              variant="outlined"
-              name="handle"
+              as         = {TextField}
+              id         = "last_name"
+              label      = "Apellido"
+              variant    = "outlined"
+              name       = "last_name"
               fullWidth
-              error   = {touched.handle && Boolean(errors.handle)}
+              error      = {touched.last_name && Boolean(errors.last_name)}
+              helperText = {touched.last_name && errors.last_name}
+              margin     = "normal"
+            />
+                  
+            <Field
+              as         = {TextField}
+              id         = "handle"
+              label      = "Nombre de Usuario"
+              variant    = "outlined"
+              name       = "handle"
+              fullWidth
+              error      = {touched.handle && Boolean(errors.handle)}
               helperText = {touched.handle && errors.handle}
-              margin  = "normal"
+              margin     = "normal"
             />
             
             <Field
-              as={TextField}
-              id="password"
-              label="Contraseña"
-              type="password"
-              variant="outlined"
-              name="password"
+              as         = {TextField}
+              id         = "password"
+              label      = "Contraseña"
+              type       = "password"
+              variant    = "outlined"
+              name       = "password"
               fullWidth
-              error   = {touched.password && Boolean(errors.password)}
+              error      = {touched.password && Boolean(errors.password)}
               helperText = {touched.password && errors.password}
-              margin  = "normal"
+              margin     = "normal"
             />
-                 
+            {/*
+            <Field
+              as         = {TextField}
+              id         = "password_confirmation"
+              label      = "Confirmar Contraseña"
+              type       = "password"
+              variant    = "outlined"
+              name       = "password_confirmation"
+              fullWidth
+              error      = {touched.password_confirmation && Boolean(errors.password_confirmation)}
+              helperText = {touched.password_confirmation && errors.password_confirmation}
+              margin     = "normal"
+            />
+            */}
+            {/*   
             <Field
               as={TextField}
               id="line1"
@@ -212,6 +248,7 @@ function SignIn() {
               helperText = {touched.country && errors.country}
               margin  = "normal"
             />
+            */}
             
             <Box display="flex" justifyContent="center" width="100%">
               <Button
@@ -249,4 +286,4 @@ function SignIn() {
   );
 }
 
-export default SignIn;
+export default SignUp;

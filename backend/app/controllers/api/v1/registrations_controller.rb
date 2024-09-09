@@ -18,7 +18,7 @@ class API::V1::RegistrationsController < Devise::RegistrationsController
       }
     else
       render json: {
-        status: {message: "User couldn't be created successfully. #{current_user.errors.full_messages.to_sentence}"}
+        status: {code: 401,message: "User couldn't be created successfully. #{current_user.errors.full_messages.to_sentence}"}
       }, status: :unprocessable_entity
     end
   end

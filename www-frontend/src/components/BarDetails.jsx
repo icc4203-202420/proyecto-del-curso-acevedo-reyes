@@ -31,6 +31,7 @@ function BarDetails() {
     
     axios.get(`http://127.0.0.1:3001/api/v1/bars/${barId}`)
       .then(response => {
+        console.log('RESPUSETA...:',response);
         setBar(response.data.bar);
         return axios.get(`http://127.0.0.1:3001/api/v1/bars/${barId}/events`);
       })
@@ -68,6 +69,7 @@ function BarDetails() {
           <Typography variant="h4" align="center">
             {bar.name}
           </Typography><br /><br /><br /><br /><br /><br />
+
           <Typography variant="body1" align="center">
             Promedio: (placeholder rating)
           </Typography><br />

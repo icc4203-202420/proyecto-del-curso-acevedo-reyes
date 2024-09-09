@@ -8,7 +8,7 @@ import BeerDetails from './components/BeerDetails';
 import ReviewBeer from './components/ReviewBeer';
 import BeerReviews from './components/BeerReviews';
 import UserInfo from './components/UserInfo';
-import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
 import LogIn from './components/LogIn';
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <Route path="/review-beer/:beerId" element={<ReviewBeer />} />
         <Route path="/beer-review/:beerId" element={<BeerReviews />} />
         <Route path="/user" element={<UserInfo />} />
-        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
         <Route path="/log-in" element={<LogIn />} />
 
 

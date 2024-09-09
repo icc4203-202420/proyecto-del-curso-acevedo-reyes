@@ -3,7 +3,7 @@ class API::V1::BeersController < ApplicationController
   include Authenticable
 
   respond_to :json
-  before_action :set_beer, only: [:show, :update, :destroy]
+  before_action :set_beer, only: [:show, :update, :destroy, :bars]
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   # GET /beers
@@ -55,6 +55,19 @@ class API::V1::BeersController < ApplicationController
       }, status: :ok
     end
   end
+
+  # GET /beers/:id/bars
+  def bars
+    @beer = Beer.find_by(id: params[:id])
+    puts "AAAAAAAAAAAAAAAAAAa: #{@beer}"
+    if @beer
+      @bars = @beer.bars
+      render json: { bars: @bars }, status: :ok
+    else
+      render json: { error: 'Beer not found' }, status: :not_found
+    end
+  end
+
 
   # POST /beers
   def create

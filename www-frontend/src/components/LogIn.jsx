@@ -14,28 +14,22 @@ import qs from 'qs'; // Para la serialización de datos
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 const validationSchema = Yup.object({
-  handle: Yup.string().required('El handle es requerido'),
+  //handle: Yup.string().required('El handle es requerido'),
+  email: Yup.string().email('Email invalido').required('El email es requerido'),
   password: Yup.string().required('La contraseña es requerida'),
 });
 
 const initialValues = {
-  handle: '',
+  //handle: '',
+  email: '',
   password: '',
 };
 
 function LogIn() {
-  const [formData, setFormData] = React.useState({
-    nombreUsuario: '',
-    contraseña: '',
-  });
-
+  
   const [serverError, setServerError] = React.useState('');
   const [loginSuccess, setLoginSuccess] = React.useState(false);
   const navigate = useNavigate();
-
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
 
   const handleBack = () => {
     navigate('/user'); // Redirige a "/user" al hacer clic en "Volver"
@@ -53,10 +47,20 @@ function LogIn() {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      const response = await executePost({ data: qs.stringify(values) });
+      const response = await executePost({ 
+        data: {
+          user: {
+            //handle: values.handle,
+            email: values.email,
+            password: values.password,
+          }
+        }
+      });
+      
       console.log(response);
-      const receivedToken = response.headers['Authorization'];
-      //const receivedToken = response.data.token;
+      const receivedToken = response.headers['authorization'];
+      //const receivedToken = response.data.status.data.token;
+      //tokenHandler(receivedToken);
       const receivedUser = response.data.status.data.user.id;
 
       if (receivedUser) {
@@ -71,6 +75,9 @@ function LogIn() {
         setTimeout(() => {
           navigate('/');
         }, 1000); // Redirige a "/" después de 1 segundo
+      }
+      else {
+        console.log('ermmm what the figma?');
       }
     }
     catch (error) {
@@ -89,7 +96,6 @@ function LogIn() {
   return (
     <Box
       className="login-form-container"
-      component="form"
       sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -116,13 +122,18 @@ function LogIn() {
           <Form>
             <Field
               as      = {TextField}
-              id      = "handle"
-              label   = "Nombre de Usuario"
+              //id      = "handle"
+              id      = "email"
+              label   = "Email"
+              //label   = "Nombre de Usuario"
               variant = "outlined"
-              name    = "handle"
+              name    = "email"
+              //name    = "handle"
               fullWidth
-              error   = {touched.handle && Boolean(errors.handle)}
-              helperText = {touched.handle && errors.handle}
+              //error   = {touched.handle && Boolean(errors.handle)}
+              //helperText = {touched.handle && errors.handle}
+              error  = {touched.email && Boolean(errors.email)}
+              helperText = {touched.email && errors.email}
               margin  = "normal"
             />
 
@@ -169,46 +180,6 @@ function LogIn() {
           </Form>
         )}
       </Formik>
-
-{/*
-      <TextField
-        id="nombreUsuario"
-        label="Nombre de Usuario"
-        variant="outlined"
-        name="nombreUsuario"
-        value={formData.nombreUsuario}
-        onChange={handleChange}
-        fullWidth
-      />
-
-      <TextField
-        id="contraseña"
-        label="Contraseña"
-        type="password"
-        variant="outlined"
-        name="contraseña"
-        value={formData.contraseña}
-        onChange={handleChange}
-        fullWidth
-      />
-
-      <Box display="flex" justifyContent="center" width="100%">
-        <Button
-          variant="outlined"
-          sx={{ mr: 2, color: 'orange', borderColor: 'orange' }}
-          onClick={handleBack} // Botón para regresar a "/user"
-        >
-          Volver
-        </Button>
-        <Button
-          variant="outlined"
-          color="success"
-          onClick={handleSubmit} // Sin acción por el momento
-        >
-          Continuar
-        </Button>
-      </Box>
-*/}
     </Box>
   );
 }

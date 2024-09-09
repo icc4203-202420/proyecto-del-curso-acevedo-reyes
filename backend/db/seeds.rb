@@ -51,6 +51,6 @@ if Rails.env.development?
     end
   end
 
-  User.create!(email: 'lucas@gmail.com', password: "123456", first_name: "Lucas", last_name: "Reyes", age: 25, handle: "@lucas")
+  #User.create!(email: 'lucas@gmail.com', password: "123456", first_name: "Lucas", last_name: "Reyes", age: 25, handle: "@lucas")
 
 end

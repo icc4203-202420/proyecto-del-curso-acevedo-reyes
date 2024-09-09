@@ -10,6 +10,7 @@ import placeHolder from '../assets/placeholder.jpg';
 function BeerDetails() {
   const { beerId } = useParams();
   const [beer, setBeer] = useState(null);
+  const [bars, setBars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -19,6 +20,11 @@ function BeerDetails() {
       .then(response => {
         setBeer(response.data.beer);
         setReviews(response.data.reviews); // Obtener las reviews
+        //setLoading(false);
+        return axios.get(`http://127.0.0.1:3001/api/v1/beers/${beerId}/bars`);
+      })
+      .then(response => {
+        setBars(response.data.bars);
         setLoading(false);
       })
       .catch(error => {
@@ -80,9 +86,23 @@ function BeerDetails() {
               Porcentaje de Alcohol: {beer.alcohol}
             </Typography>
             
-            {beer.brand && (
+            {beer.brand.brewery.name && (
               <Typography variant="body1" align="center" paragraph>
-                Producida por {beer.brand.name}
+                Producida por {beer.brand.brewery.name}
+              </Typography>
+            )}
+
+            <Typography variant="h6" align="center" paragraph>
+              Bares que sirven esta cerveza:
+            </Typography>
+            {bars.map(bar => (
+              <Typography key={bar.id} variant="body1" align="center" paragraph>
+                {bar.name}
+              </Typography>
+            ))}
+            {!bars.length && (
+              <Typography variant="body1" align="center" paragraph>
+                No hay bares que sirvan esta cerveza.
               </Typography>
             )}
           </>

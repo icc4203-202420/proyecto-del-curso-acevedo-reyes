@@ -21,6 +21,7 @@ class API::V1::SessionsController < Devise::SessionsController
         true,
         { algorithm: 'HS256' }
       ).first
+      puts "JWT PAYLOAD......: #{jwt_payload}"
       current_user = User.find(jwt_payload['sub'])
     end
     
