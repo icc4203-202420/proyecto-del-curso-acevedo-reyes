@@ -1,7 +1,9 @@
 class API::V1::SessionsController < Devise::SessionsController
   include ::RackSessionsFix
   respond_to :json
+
   private
+  
   def respond_with(current_user, _opts = {})
     render json: {
       status: { 
@@ -10,6 +12,7 @@ class API::V1::SessionsController < Devise::SessionsController
       }
     }, status: :ok
   end
+  
   def respond_to_on_destroy
     if request.headers['Authorization'].present?
       jwt_payload = JWT.decode(
