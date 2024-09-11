@@ -46,7 +46,9 @@ class API::V1::ReviewsController < ApplicationController
   end
 
   def set_user
-    @user = User.find(params[:user_id]) 
+    user_id = params.dig(:user, :id) # Extrae el user_id de los parámetros anidados en :review
+    @user = User.find_by(id: user_id) if user_id.present? 
+    render json: { error: "User not found" }, status: :not_found unless @user
   end
 
   def review_params

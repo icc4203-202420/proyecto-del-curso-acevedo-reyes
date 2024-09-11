@@ -8,7 +8,6 @@ import axios from 'axios';
 import  useAxios  from 'axios-hooks';
 import { Formik, Form, Field, ErrorMessage } from 'formik'; // Para el manejo de formularios
 import * as Yup from 'yup'; // Para la validación de formularios
-import qs from 'qs'; // Para la serialización de datos
 
 // Configuración de axios con axios-hooks
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -59,8 +58,6 @@ function LogIn() {
       
       console.log(response);
       const receivedToken = response.headers['authorization'];
-      //const receivedToken = response.data.status.data.token;
-      //tokenHandler(receivedToken);
       const receivedUser = response.data.status.data.user.id;
 
       if (receivedUser) {

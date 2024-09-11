@@ -1,25 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router-dom';
-import { Typography, CircularProgress, Box, AppBar, Button, Toolbar, Link } from '@mui/material';
+import { Rating, Typography, CircularProgress, Box, AppBar, Button, Toolbar, Link } from '@mui/material';
 import axios from 'axios';
-import { Star, StarOutline } from '@mui/icons-material'; // ICONOS
+import { Star } from '@mui/icons-material'; // ICONOS
 import CreateIcon from '@mui/icons-material/Create';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import placeHolder from '../assets/placeholder.jpg';
 
 function BeerDetails() {
+
+  if (localStorage.getItem('beer')) {
+    localStorage.removeItem('beer');
+  }
+
+
   const { beerId } = useParams();
   const [beer, setBeer] = useState(null);
   const [bars, setBars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  //const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:3001/api/v1/beers/${beerId}`)
       .then(response => {
         setBeer(response.data.beer);
-        setReviews(response.data.reviews); // Obtener las reviews
+        //setReviews(response.data.reviews); // Obtener las reviews
         //setLoading(false);
         return axios.get(`http://127.0.0.1:3001/api/v1/beers/${beerId}/bars`);
       })
@@ -43,7 +49,7 @@ function BeerDetails() {
     <>
       <AppBar position="fixed" sx={{ bgcolor: "lightgray" }}>
         <Toolbar>
-          <Button component={RouterLink} to="/" color="inherit">
+          <Button component={RouterLink} to="/" sx={{color: 'black'}}>
             <NavigateBeforeIcon />
             Cervezas
           </Button>
@@ -55,33 +61,32 @@ function BeerDetails() {
       <Box paddingTop="64px"> {/* To account for AppBar height */}
         {beer && (
           <>
-            <Typography variant="h4" align="center" gutterBottom>
+            <Typography variant="h4" align="center" gutterBottom >
               {beer.name}
             </Typography>
             
             <Box display="flex" justifyContent="center" mb={2}>
               <img src={placeHolder} alt={`${beer.name} image`} style={{ width: '200px', height: 'auto' }} />
             </Box>
+            
             <Box display="flex" justifyContent="center" mb={2}>
-              <Link component={RouterLink} to={`/review-beer/${beerId}`} sx={{ marginRight: 1 }}> 
-                <CreateIcon color="primary" fontSize="small" />
+              
+              <Link 
+                component = {RouterLink} 
+                to        = {`/review-beer/${beerId}`} 
+                //state     = {{ beer }}
+                sx        = {{ marginRight: 1 }}
+              > 
+                <CreateIcon sx={{color: 'black'}} fontSize="small" />
               </Link>
-              {Array.from({ length: 5 }, (_, index) => (
-                index < rating ? (
-                  <Star key={index} color="primary" fontSize="small" />
-                ) : (
-                  <StarOutline key={index} color="primary" fontSize="small" />
-                )
-              ))}
+              
+              <Rating value={beer.avg_rating} precision={0.1} readOnly sx={{color: 'black'}} />
             </Box>
-
-            <Typography variant="body2" align="center" paragraph>
-              Promedio: {beer.avg_rating }
-            </Typography>
 
             <Typography variant="body1" align="center" paragraph>
               Cerveza de estilo {beer.style}
             </Typography>
+            
             <Typography variant="body1" align="center" paragraph>
               Porcentaje de Alcohol: {beer.alcohol}
             </Typography>
@@ -97,7 +102,9 @@ function BeerDetails() {
             </Typography>
             {bars.map(bar => (
               <Typography key={bar.id} variant="body1" align="center" paragraph>
-                {bar.name}
+                <Link component={RouterLink} to={`/bars/${bar.id}`}>
+                  {bar.name}
+                </Link>
               </Typography>
             ))}
             {!bars.length && (
@@ -119,9 +126,14 @@ function BeerDetails() {
             to={`/beer-review/${beerId}`}
             sx={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit', marginLeft: 1 }}
           >
-            Reviews de usuarios
+            <Link>
+              Reviews de usuarios
+            </Link>
           </Typography>
         </Box>
+
+        <Toolbar />
+
       </Box>
     </>
   );

@@ -46,10 +46,10 @@ function BarsList({ searchKeywords }) {
           {/* nombre */}
           <Grid item xs>
             <Link
-                key       = {bar.id}
-                component = {RouterLink}
-                to        = {`/bars/${bar.id}`}
-                underline = "none"
+              key       = {bar.id}
+              component = {RouterLink}
+              to        = {`/bars/${bar.id}`}
+              underline = "none"
             >
               <Typography variant="h6" fontWeight="bold">
                 {bar.name}

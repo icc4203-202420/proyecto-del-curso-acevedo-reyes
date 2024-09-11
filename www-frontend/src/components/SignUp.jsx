@@ -9,7 +9,6 @@ import  useAxios  from 'axios-hooks';
 import { Formik, Form, Field } from 'formik'; // Para el manejo de formularios
 import * as Yup from 'yup'; // Para la validación de formularios
 import Toolbar from '@mui/material/Toolbar';
-import qs from 'qs'
 
 // Configuración de axios con axios-hooks
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
@@ -21,8 +20,9 @@ const validationSchema = Yup.object({
   handle: Yup.string().required('Tu handle es requerido'),
   password: Yup.string().required('La contraseña es requerida'),
   //password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Las contraseñas deben coincidir'),
-  //line1, city, country no son requeridos
+  //line1, line2, city, country no son requeridos
   //line1: Yup.string(),
+  //line2: Yup.string(),
   //city: Yup.string(),
   //country: Yup.string(),
 });
@@ -35,6 +35,7 @@ const initialValues = {
   password: '',
   //password_confirmation: '',
   //line1: '',
+  //line2: '',
   //city: '',
   //country: '',
 };
@@ -70,10 +71,13 @@ function SignUp() {
             handle: values.handle,
             password: values.password,
             //password_confirmation: values.password_confirmation,
-            //line1: values.line1,
-            //city: values.city,
-            //country: values.country,
-          }
+            
+          }//,
+          //address: {
+          //  line1: values.line1,
+          //  line2: values.line2,
+          //  city: values.city,
+          //  country: values.country,
         }
       });
       console.log(response);
@@ -81,19 +85,6 @@ function SignUp() {
         navigate('/log-in');
       }, 1000);
 
-      //const receivedToken = response.headers['authorization'];
-      //console.log('usuario registrado!', response.data.status.data.user.id);
-      //const receivedToken = response.data.status.data.token;
-
-      //if (receivedToken) {
-      //  console.log('token recibido!:', receivedToken);
-      //  localStorage.setItem('token', receivedToken);
-      //  setSignupSuccess(true);
-
-      //  setTimeout(() => {
-      //    navigate('/log-in');
-      //  }, 1000);
-      //}
     }
     catch (error) {
 
@@ -198,7 +189,7 @@ function SignUp() {
               helperText = {touched.password && errors.password}
               margin     = "normal"
             />
-            {/*
+            {/* PARA IMPLEMENTAR MÁS ADELANTE.....
             <Field
               as         = {TextField}
               id         = "password_confirmation"

@@ -51,6 +51,11 @@ if Rails.env.development?
     end
   end
 
-  #User.create!(email: 'lucas@gmail.com', password: "123456", first_name: "Lucas", last_name: "Reyes", age: 25, handle: "@lucas")
+  # Crear reviews de cervezas
+  users.each do |user|
+    Beer.all.sample(rand(1..3)).each do |beer|
+      FactoryBot.create(:review, user: user, beer: beer)
+    end
+  end
 
 end

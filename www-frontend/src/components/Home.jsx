@@ -1,5 +1,5 @@
-import { Button, Typography, AppBar, Box } from '@mui/material'; // Añadido Box
-import { useNavigate, useLocation } from 'react-router-dom'; // Añadido useLocation
+import { Typography, Box } from '@mui/material'; // Añadido Box
+import { useLocation } from 'react-router-dom'; // Añadido useLocation
 import React, { useState, useEffect } from 'react'; // Añadido useState y useEffect
 import SearchAppBar from './SearchAppBar'; // Asegúrate de tener este componente
 import SearchTabs from './SearchTabs'; // Asegúrate de tener este componente

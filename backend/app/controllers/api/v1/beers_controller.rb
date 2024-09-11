@@ -29,7 +29,7 @@ class API::V1::BeersController < ApplicationController
         },
         reviews: {
           include: { 
-            user: { only: [:id, :name] }
+            user: { only: [:id, :handle] }
           },
           only: [:id, :text, :rating, :created_at]
         }
@@ -47,7 +47,7 @@ class API::V1::BeersController < ApplicationController
           },
           reviews: {
             include: { 
-              user: { only: [:id, :name] }
+              user: { only: [:id, :handle] }
             },
             only: [:id, :text, :rating, :created_at]
           }
