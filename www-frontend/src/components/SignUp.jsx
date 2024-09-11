@@ -21,10 +21,10 @@ const validationSchema = Yup.object({
   password: Yup.string().required('La contraseña es requerida'),
   //password_confirmation: Yup.string().oneOf([Yup.ref('password'), null], 'Las contraseñas deben coincidir'),
   //line1, line2, city, country no son requeridos
-  //line1: Yup.string(),
-  //line2: Yup.string(),
-  //city: Yup.string(),
-  //country: Yup.string(),
+  line1: Yup.string(),
+  line2: Yup.string(),
+  city: Yup.string(),
+  country: Yup.string(),
 });
 
 const initialValues = {
@@ -33,11 +33,11 @@ const initialValues = {
   last_name: '',
   handle: '',
   password: '',
-  //password_confirmation: '',
-  //line1: '',
-  //line2: '',
-  //city: '',
-  //country: '',
+  password_confirmation: '',
+  line1: '',
+  line2: '',
+  city: '',
+  country: '',
 };
 
 function SignUp() {
@@ -70,16 +70,15 @@ function SignUp() {
             last_name: values.last_name,
             handle: values.handle,
             password: values.password,
-            //password_confirmation: values.password_confirmation,
-            
-          }//,
-          //address: {
-          //  line1: values.line1,
-          //  line2: values.line2,
-          //  city: values.city,
-          //  country: values.country,
+            //password_confirmation: values.password_confirmation,  
+          },
+          address: {
+            line1: values.line1,
+            line2: values.line2,
+            city: values.city,
+            country: values.country,
         }
-      });
+      }});
       console.log(response);
       setTimeout(() => {
         navigate('/log-in');
@@ -203,7 +202,7 @@ function SignUp() {
               margin     = "normal"
             />
             */}
-            {/*   
+               
             <Field
               as={TextField}
               id="line1"
@@ -214,6 +213,18 @@ function SignUp() {
               error   = {touched.line1 && Boolean(errors.line1)}
               helperText = {touched.line1 && errors.line1}
               margin  = "normal"
+            />
+
+            <Field
+              as={TextField}
+              id="line2"
+              label="Dpt, Piso, etc. "
+              variant="outlined"
+              name="line2"
+              fullWidth
+              error={touched.line2 && Boolean(errors.line2)}
+              helperText={touched.line2 && errors.line2}
+              margin="normal"
             />
             
             <Field
@@ -239,7 +250,7 @@ function SignUp() {
               helperText = {touched.country && errors.country}
               margin  = "normal"
             />
-            */}
+            
             
             <Box display="flex" justifyContent="center" width="100%">
               <Button
