@@ -7,8 +7,15 @@ class API::V1::BarsController < ApplicationController
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   def index
-    @bars = Bar.all
-    render json: { bars: @bars }, status: :ok
+    @bars = Bar.includes(address: :country).all
+    render json: { 
+      bars: @bars.as_json(include: {
+        address: { 
+          include: { country: { only: [:id, :name] } },
+          only: [:id, :line1, :line2, :city, :user_id]
+        }
+      }, 
+      only: [:id, :name, :latitude, :longitude, :created_at, :updated_at] )} , status: :ok
   end
 
   def show

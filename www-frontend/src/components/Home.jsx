@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom'; // Añadido useLocation
 import React, { useState, useEffect } from 'react'; // Añadido useState y useEffect
 import SearchAppBar from './SearchAppBar'; // Asegúrate de tener este componente
 import SearchTabs from './SearchTabs'; // Asegúrate de tener este componente
+import logo from '../assets/logo.png';
+import Map from './Map'; 
 
 function Home() {
   const location = useLocation();
@@ -17,17 +19,21 @@ function Home() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <SearchAppBar searchKeywords={searchKeywords} setSearchKeywords={setSearchKeywords} />
+      <br />
+      
+      <Box display="flex" justifyContent="center" mb={2}>
+        <img src={logo} style={{ width: '200px', height: 'auto' }} alt="Logo" />
+      </Box>
+
+      <Map />
 
       {searchKeywords ? (
         <SearchTabs searchKeywords={searchKeywords} setSearchKeywords={setSearchKeywords} />
       ) : (
         <>
-          <Typography variant="h6" component="h1" align="center" gutterBottom>
-            Placeholder del mapa! La idea es que se muestren los mapas más cercanos según la ubicación del usuario, pero a este punto es literalmente imposible hacer eso así que está vacío!!
-          </Typography>
-
+          
           <Typography variant="body1" align="center" gutterBottom>
-            ¡El icono del medio lleva al root, por cierto!
+            Descubre bares cercanos!!!
           </Typography>
         </>
       )}
