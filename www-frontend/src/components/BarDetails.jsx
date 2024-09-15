@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { Typography, CircularProgress, Box, AppBar, Button, Toolbar, Grid } from '@mui/material';
+import { Divider, Typography, CircularProgress, Box, AppBar, Button, Toolbar, Grid, Link} from '@mui/material';
 import axios from 'axios';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import {Bookmark, BookmarkBorder } from '@mui/icons-material';
-import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
+import TodayTwoToneIcon from '@mui/icons-material/TodayTwoTone';
 import LocationOn from '@mui/icons-material/LocationOn';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 function BarDetails() {
   const { barId } = useParams();
@@ -17,7 +18,7 @@ function BarDetails() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString('es', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -53,7 +54,7 @@ function BarDetails() {
     <AppBar position="fixed" sx={{bgcolor: "lightgray"}}>
       
       <Typography color="black" align="left">
-        <Button component={RouterLink} to="/search" color="inherit">
+        <Button component={RouterLink} to="/" color="inherit">
           <NavigateBeforeIcon />
           Bares
         </Button>
@@ -61,14 +62,22 @@ function BarDetails() {
 
     </AppBar>
 
-    <Toolbar /> {/* separacion */}
+    <Toolbar />
 
     <Box>
       {bar && (
         <>
           <Typography variant="h4" align="center">
             {bar.name}
-          </Typography><br /><br /><br /><br /><br /><br />
+          </Typography>
+          
+          <Typography variant="body1" align="center">
+            placeholder de la imagen del bar!
+          </Typography>
+          
+
+          <br /><br /><br /><br /><br /><br />
+          <br /><br /><br />
 
           <Typography variant="body1" align="center">
             Promedio: (placeholder rating)
@@ -86,33 +95,82 @@ function BarDetails() {
           </Grid>
         </>
       )}
-      
+
+      <Divider sx={{my: 4, borderBottomWidth: 5}}/>
+
       <Box mt={4}>
-        <Typography variant="h5"> <Bookmark fontSize="large"/> Eventos</Typography><br />
+        <Typography variant="h5"> <Bookmark fontSize="large"/> 
+          Próximos Eventos
+        </Typography><br />
+
         {events.map(event => (
         <>
-          <Grid container key={event.id} sx={{ mb: 3 }}>
+          <Grid container spacing={2} key={event.id} sx={{ mb: 3 }} >
             
-            <BookmarkBorder />
+            <Grid item xs={1}>
+            </Grid>
 
-            <Typography 
-              key     = {event.id} 
-              variant = "body2"
-              align   = "right"
-              
-            >
-              Evento {event.name} - {event.description} <CalendarTodayOutlinedIcon fontSize="small"/> {formatDate(event.date)}
-            </Typography>
+            <Grid item xs={1}>
+              <BookmarkBorder />
+            </Grid>
 
-          </Grid>
+            <Grid item xs={2}>
+            </Grid>
+
+            <Grid item xs={8}> 
+              <Typography 
+                //key     = {event.id}
+                fontWeight="bold" 
+                variant = "body1"
+                //align   = "right"
+                
+              >
+                Evento ola papus celebracion de alcoholicos! {event.name} - {event.description}
+              </Typography>
+            </Grid>
+
+            <Grid item xs={1}>
+            </Grid>
+
+            <Grid item xs={3}>
+
+              <Link
+                key       = {event.id}
+                component = {RouterLink}
+                to        = {`/events/${event.id}`}
+                underline = "none"
+              >
+
+                <Typography
+                  fontWeight = "bold"
+                  variant    = "body2"
+                >
+                  <ArrowDropDownIcon /> 
+                  Ver más...
+                </Typography>
+              </Link>
+            </Grid>
+
+            <Grid item xs={2}>
+            </Grid>
+
+            <Grid item xs={6}>
+              <Typography
+                variant = "body2"
+              >
+                <TodayTwoToneIcon fontSize="medium"/> 
+                {formatDate(event.date)}
+              </Typography>
+            </Grid>
+
+          </Grid><br />
+
         </>
         ))}
       </Box>
       
-
       <Toolbar />
-      <Typography variant="body">(planeaba hacer esto mas lindo pero cada icono que importaba hacia que se cayera el server! gracias MUI!)</Typography>
-
+      
     </Box>
   </>
   );

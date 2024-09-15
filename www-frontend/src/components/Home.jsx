@@ -19,18 +19,18 @@ function Home() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <SearchAppBar searchKeywords={searchKeywords} setSearchKeywords={setSearchKeywords} />
-      <br />
       
-      <Box display="flex" justifyContent="center" mb={2}>
-        <img src={logo} style={{ width: '200px', height: 'auto' }} alt="Logo" />
-      </Box>
-
-      <Map />
-
+      
       {searchKeywords ? (
         <SearchTabs searchKeywords={searchKeywords} setSearchKeywords={setSearchKeywords} />
       ) : (
         <>
+          <br />
+          <Box display="flex" justifyContent="center" mb={2}>
+            <img src={logo} style={{ width: '200px', height: 'auto' }} alt="Logo" />
+          </Box>
+
+          <Map />
           
           <Typography variant="body1" align="center" gutterBottom>
             Descubre bares cercanos!!!

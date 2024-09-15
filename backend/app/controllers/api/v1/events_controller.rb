@@ -19,16 +19,28 @@ class API::V1::EventsController < ApplicationController
     render json: { events: @events }, status: :ok
   end
 
-
   # GET /api/v1/events/:id
   def show
-    if @event.image.attached?
-      render json: @event.as_json.merge({ 
-        image_url: url_for(@event.image), 
-        thumbnail_url: url_for(@event.thumbnail) }),
+    bar_info = { id: @event.bar.id, name: @event.bar.name }
+    
+    attendances = @event.attendances.as_json(except: :bar_id).map do |attendance|
+      attendance.merge(user: { id: attendance['user_id'], handle: User.find(attendance['user_id']).handle })
+    end
+    
+    event_data = @event.as_json.except("bar_id")
+    
+    if @event.flyer.attached?
+      render json: event_data.merge({ 
+        image_url: url_for(@event.flyer), 
+        thumbnail_url: url_for(@event.thumbnail),
+        bar: bar_info,
+        attendances: attendances }),
         status: :ok
     else
-      render json: { event: @event.as_json }, status: :ok
+      render json: { event: event_data.merge({ 
+        bar: bar_info, 
+        attendances: attendances }) 
+        }, status: :ok
     end
   end
 
