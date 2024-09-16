@@ -84,20 +84,31 @@ function BarDetails() {
           </Typography><br />
           
           <Grid container alignItems="center" justifyContent="center">
-            <Typography variant="h5" align="center">
-              <LocationOn fontSize="large" /> 
-              
-              <Typography variant="body1" align="center">
-              {`lat: ${Math.round(bar.latitude * 100) / 100}, lon: ${Math.round(bar.longitude * 100) / 100}`}
-              </Typography>
             
-            </Typography>
+            <Grid item xs={1}>
+            </Grid>
+
+            <Grid item xs={1}>
+              <LocationOn />
+            </Grid>
+            
+            <Grid item xs={9}>
+              <Typography variant="body1" align="center">
+              {bar.address.line1}, {bar.address.line2}, 
+              <br />{bar.address.city}, {bar.address.country.name}.
+              </Typography>
+            </Grid>
+
+            <Grid item xs={1}>
+            </Grid>  
+            
           </Grid>
         </>
       )}
 
       <Divider sx={{my: 4, borderBottomWidth: 5}}/>
 
+      {/* eventos */}
       <Box mt={4}>
         <Typography variant="h5"> <Bookmark fontSize="large"/> 
           Próximos Eventos
@@ -125,7 +136,7 @@ function BarDetails() {
                 //align   = "right"
                 
               >
-                Evento ola papus celebracion de alcoholicos! {event.name} - {event.description}
+                Evento {event.name}
               </Typography>
             </Grid>
 
@@ -157,6 +168,7 @@ function BarDetails() {
             <Grid item xs={6}>
               <Typography
                 variant = "body2"
+                align='center'
               >
                 <TodayTwoToneIcon fontSize="medium"/> 
                 {formatDate(event.date)}

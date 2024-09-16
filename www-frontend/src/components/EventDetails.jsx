@@ -139,13 +139,14 @@ function EventDetails() {
 
     <Divider sx={{my: 4, borderBottomWidth: 5}}/>
 
-    {/* si es que al menos un instancia de attendances es del user actual, significa que ya confirmo asistencia, por lo que no se deberia mostrar el boton*/}
+    {/* si es que al menos una instancia de attendances es del user actual, significa que ya confirmo asistencia, por lo que no se deberia mostrar el boton*/}
     {event.attendances.some(attendance => attendance.user.id === user) && (
       <Typography variant="h6" align="center" color="primary">
       Gracias por confirmar tu asistencia.
     </Typography>
     )}
 
+    {/* boton y handleSubmit de la asistencia del usuario */}
     {!event.attendances.some(attendance => attendance.user.id === user) && (
       <Box
         sx={{
@@ -186,26 +187,38 @@ function EventDetails() {
     )}
 
     <br /><br />
+    {/* lista de asistentes */}
     <Grid container spacing={1} sx={{ mb: 3 }} >
       
       <Grid item xs={1}>
         <PersonOutlinedIcon fontSize='large'/>
       </Grid>
 
-      <Grid item xs={11}>
+      <Grid item xs={10}>
         <Typography variant="body2" align='center'>
-          {event.attendances.map((attendance, index) => (
+          {!event.attendances.length && 'Sé el primero en confirmar asistencia!'}
+
+          {event.attendances.length && event.attendances.map((attendance, index) => (
             <React.Fragment key={attendance.id}>
               @{attendance.user.handle}
               {index < event.attendances.length - 1 && ', '}
+              <br />han confirmado su asistencia
             </React.Fragment>
           ))}
-          <br />han confirmado su asistencia
+          
         </Typography>
       </Grid>
-    
-    </Grid><br />
 
+      <Grid item xs={1}>
+      </Grid>
+    
+    </Grid>
+
+    <Typography fontWeight='bold' variant="h6" align="center">
+      {event.description}
+    </Typography><br />
+
+    {/* detalles del evento */}
     <Grid container spacing={1} sx={{ mb: 3 }} >
       
       <Grid item xs={1}>
@@ -254,6 +267,8 @@ function EventDetails() {
       </Grid>
 
     </Grid>
+
+    <Toolbar />
   </>
   );
 }

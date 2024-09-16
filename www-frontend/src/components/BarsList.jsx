@@ -36,15 +36,16 @@ function BarsList({ searchKeywords }) {
         <Grid container spacing={2} alignItems="center" key={bar.id} sx={{ mb: 3 }}>
           
           {/* locacion!! */}
-          <Grid item>
+          <Grid item xs={8}>
             <LocationOn fontSize="small" />
-            <Typography variant="caption" display="block">
-              {`lat: ${Math.round(bar.latitude * 100) / 100}, lon: ${Math.round(bar.longitude * 100) / 100}`}
+            <Typography variant="caption" >
+              {bar.address.line1}, {bar.address.line2}, 
+              <br />{bar.address.city}, {bar.address.country.name}
             </Typography>
           </Grid>
 
           {/* nombre */}
-          <Grid item xs>
+          <Grid item xs={4}>
             <Link
               key       = {bar.id}
               component = {RouterLink}
@@ -56,23 +57,15 @@ function BarsList({ searchKeywords }) {
               </Typography>
             
             </Link>
-           
+          
           </Grid>
 
-          {/* rating (por mientras vacio!) */}
-          <Grid item>
-            <Box display="flex" alignItems="center">
-              {Array.from({ length: 5 }, (_, index) => (
-                <StarOutline
-                  key={index} 
-                  fontSize="small" 
-                />
-              ))}
-            </Box>
-          </Grid>
+          
           
         </Grid>
       ))}
+
+      <br />
     </Box>
   );
 }

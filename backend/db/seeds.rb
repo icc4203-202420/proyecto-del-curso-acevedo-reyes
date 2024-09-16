@@ -34,6 +34,30 @@ if Rails.env.development?
     bar.beers << Beer.all.sample(rand(1..3))
   end
 
+  chile = Country.create(name: 'Chile')
+
+  address = Address.create(
+    line1: 'Av. Pdte. Kennedy 9001',
+    line2: 'Local 3235',
+    city: 'Las Condes',
+    user: users.sample, # ermm xd 
+    country: chile
+  )
+
+  eskibiritoiles = Bar.create(
+    name: 'Eskibiri Toiles',
+    latitude: '-33.390035084056386', 
+    longitude: '-70.54683240607851',
+    address: address
+  )
+
+  evento1 = Event.create(
+    name: 'Celebración de 1 año sobrio en Alcohólicos Anónimos',
+    description: 'Ven a celebrar con nosotros un año de sobriedad en el eskibiri bar. Habrá premios y sorpresas.',
+    date: DateTime.new(2023, 12, 31, 20, 0, 0),
+    bar: eskibiritoiles
+  )
+    
   # Crear eventos asociados a los bares
   events = bars.map do |bar|
     FactoryBot.create(:event, bar: bar)
