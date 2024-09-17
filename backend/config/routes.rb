@@ -28,7 +28,8 @@ Rails.application.routes.draw do
       
       get 'bars/:bar_id/events', to: 'events#bars_events_index'
       get 'beers/:id/bars', to: 'beers#bars'
-      
+      get 'users/:id/friendships', to: 'users#friendships'
+
       resources :users do
         resources :reviews, only: [:index]
       end

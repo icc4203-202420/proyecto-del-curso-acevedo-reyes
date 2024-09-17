@@ -1,6 +1,6 @@
 class API::V1::UsersController < ApplicationController
   respond_to :json
-  before_action :set_user, only: [:show, :update, :destroy, :friendships, :create_friendship] 
+  before_action :set_user, only: [:update, :friendships, :create_friendship] 
   #before_action :verify_jwt_token, only: [:create, :update, :destroy]
   
   def index
@@ -9,7 +9,7 @@ class API::V1::UsersController < ApplicationController
 
   # GET /api/v1/users/:id/friendships: retorna una lista de todas los user que son amigos segun el modelo Friendship
   def friendships
-    @user = User.find(params[:id])
+    #@user = User.find(params[:id])
     @friends = @user.friends
     render json: { friends: @friends }, status: :ok
   end

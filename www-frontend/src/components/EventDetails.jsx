@@ -8,9 +8,10 @@ import BookmarkAddOutlinedIcon from '@mui/icons-material/BookmarkAddOutlined';
 import PersonOutlinedIcon from '@mui/icons-material/PersonOutlined';
 import TodayTwoToneIcon from '@mui/icons-material/TodayTwoTone';
 import ScheduleOutlinedIcon from '@mui/icons-material/ScheduleOutlined';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import axios from 'axios';
 import useAxios from 'axios-hooks';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object({
@@ -24,9 +25,11 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 function EventDetails() {
 
   const [event, setEvent] = useState([]);
+  const [friends, setFriends] = useState([]);
   const [getError, setGetError] = useState(null);
   const [getloading, setGetLoading] = useState(true);
   const { eventId } = useParams();
+  
 
   const user = Math.round(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
@@ -46,7 +49,7 @@ function EventDetails() {
   useEffect(() => {
     axios.get(`/api/v1/events/${eventId}`)
       .then(response => {
-        console.log('RESPUSETA...:',response);
+        console.log('RESPUSETA EVENTOS...:',response);
         setEvent(response.data.event);
         setGetLoading(false);
       })
@@ -56,6 +59,20 @@ function EventDetails() {
         setGetLoading(false);
       });
   }, [eventId]);
+
+  useEffect(() => {
+    axios.get(`/api/v1/users/1/friendships`)
+      .then(response => {
+        console.log('RESPUSETA AMIGOS...:',response.data.friends);
+        setFriends(response.data.friends);
+        setGetLoading(false);
+      })
+      .catch(error => {
+        setGetError(error);
+        console.log("ERROR>>>>:",error);
+        setGetLoading(false);
+      });
+  }, [user]);
 
   const [{ data, loading, error }, executePost] = useAxios(
     {
@@ -94,6 +111,7 @@ function EventDetails() {
   console.log("Event>>>>:",event);
 
   if (getloading) return <Typography>Loading...</Typography>;
+  if (getError || error) return <Typography>Error al fetchear evento y/o amigos!</Typography>;
   if (!user) return (
     <>
     <AppBar position="static" sx={{ bgcolor: 'lightgray' }}>
@@ -106,7 +124,7 @@ function EventDetails() {
     </AppBar>
 
     <Typography color="error" sx={{ textAlign: 'center' }}>
-      Debes estar logueado para hacer confirmar la asistencia a un evento.
+      Debes estar logueado para confirmar la asistencia a un evento.
     </Typography>
     </>
   );
@@ -191,33 +209,63 @@ function EventDetails() {
     <Grid container spacing={1} sx={{ mb: 3 }} >
       
       <Grid item xs={1}>
-        <PersonOutlinedIcon fontSize='large'/>
+      <PersonOutlinedIcon fontSize='large'/>
       </Grid>
 
       <Grid item xs={10}>
-        <Typography variant="body2" align='center'>
-          {!event.attendances.length && 'Sé el primero en confirmar asistencia!'}
+      <Typography variant="body2" align='center'>
+        {!event.attendances.length && 'Sé el primero en confirmar asistencia!'}
 
-          {event.attendances.length && event.attendances.map((attendance, index) => (
-            <React.Fragment key={attendance.id}>
-              @{attendance.user.handle}
-              {index < event.attendances.length - 1 && ', '}  
-            </React.Fragment>
-          ))}
-          {event.attendances.length && (
-            <>
-              <br />
-              han confirmado su asistencia.
-            </>
-          )}
-          
-        </Typography>
+        {event.attendances.length && event.attendances.map((attendance, index) => (
+          <React.Fragment key={attendance.id}>
+            @{attendance.user.handle}
+            {index < event.attendances.length - 1 && ', '}  
+          </React.Fragment>
+        ))}
+
+        {event.attendances.length && (
+        <>
+          <br />
+          han confirmado su asistencia.
+        </>
+        )}
+        
+      </Typography>
       </Grid>
 
       <Grid item xs={1}>
       </Grid>
-    
+
     </Grid>
+
+    {/* lista de amigos asistentes */}
+    {friends.length > 0 && (
+      <Grid container spacing={1} sx={{ mb: 3 }} >
+        <Grid item xs={1}>
+          <EmojiPeopleIcon fontSize='large'/>
+        </Grid>
+
+        <Grid item xs={10}>
+          <Typography variant="body2" align='center'>
+            {event.attendances.some(attendance => friends.some(friend => friend.id === attendance.user.id)) ? (
+              event.attendances.map((attendance, index) => (
+                friends.some(friend => friend.id === attendance.user.id) && (
+                  <React.Fragment >
+                    @{attendance.user.handle}
+                    {index < event.attendances.length - 1 && ', '}
+                  </React.Fragment>
+                )
+              ))
+            ) : (
+              'Ninguno de tus amigos ha confirmado asistencia.'
+            )}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={1}>
+        </Grid>
+      </Grid>
+    )}
 
     <Typography fontWeight='bold' variant="h6" align="center">
       {event.description}
