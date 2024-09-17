@@ -57,7 +57,7 @@ function SearchAppBar({ searchKeywords, setSearchKeywords }) {
               <SearchIconWrapper>
               </SearchIconWrapper>
               <StyledInputBase
-                placeholder="Busca bares por nombre!"
+                placeholder="Busca solo por nombre!"
                 inputProps={{ 'aria-label': 'search' }}
                 value={searchKeywords}
                 onChange={handleInputChange}

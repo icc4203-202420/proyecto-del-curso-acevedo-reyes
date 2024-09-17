@@ -116,7 +116,7 @@ function BarDetails() {
 
         {events.map(event => (
         <>
-          <Grid container spacing={2} key={event.id} sx={{ mb: 3 }} >
+          <Grid container spacing={2} sx={{ mb: 3 }} >
             
             <Grid item xs={1}>
             </Grid>
@@ -128,13 +128,11 @@ function BarDetails() {
             <Grid item xs={2}>
             </Grid>
 
-            <Grid item xs={8}> 
+            <Grid item xs={7}> 
               <Typography 
-                //key     = {event.id}
                 fontWeight="bold" 
                 variant = "body1"
-                //align   = "right"
-                
+                align   = "center"
               >
                 Evento {event.name}
               </Typography>
@@ -143,7 +141,11 @@ function BarDetails() {
             <Grid item xs={1}>
             </Grid>
 
-            <Grid item xs={3}>
+            {/* segunda fila */}
+            <Grid item xs={1}>
+            </Grid>
+
+            <Grid item xs={4}>
 
               <Link
                 key       = {event.id}
@@ -162,15 +164,16 @@ function BarDetails() {
               </Link>
             </Grid>
 
-            <Grid item xs={2}>
+            <Grid item xs={1}>
+            <TodayTwoToneIcon fontSize="medium"/> 
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={5}>
               <Typography
                 variant = "body2"
                 align='center'
               >
-                <TodayTwoToneIcon fontSize="medium"/> 
+                
                 {formatDate(event.date)}
               </Typography>
             </Grid>

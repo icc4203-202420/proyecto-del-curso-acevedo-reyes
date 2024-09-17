@@ -36,7 +36,7 @@ if Rails.env.development?
 
   chile = Country.create(name: 'Chile')
 
-  address = Address.create(
+  address1 = Address.create(
     line1: 'Av. Pdte. Kennedy 9001',
     line2: 'Local 3235',
     city: 'Las Condes',
@@ -44,11 +44,41 @@ if Rails.env.development?
     country: chile
   )
 
+  address2 = Address.create(
+    line1: 'Moneda 1576',
+    line2: 'Dpto. 301',
+    city: 'Santiago',
+    user: users.sample, # ermm xd
+    country: chile
+  )
+
+  address3 = Address.create(
+    line1: 'Suecia 142',
+    line2: 'Dpto. 201',
+    city: 'Providencia',
+    user: users.sample, # ermm xd
+    country: chile
+  )
+
   eskibiritoiles = Bar.create(
     name: 'Eskibiri Toiles',
     latitude: '-33.390035084056386', 
     longitude: '-70.54683240607851',
-    address: address
+    address: address1
+  )
+
+  dondeeleskibiri = Bar.create(
+    name: 'Donde el Eskibiri',
+    latitude: '-33.442727212390785', 
+    longitude: '-70.65875072979135',
+    address: address2
+  )
+
+  lospapusigmas = Bar.create(
+    name: 'Los Papusigmas',
+    latitude: '-33.41936993961779',
+    longitude: '-70.60911875004975',
+    address: address3
   )
 
   evento1 = Event.create(
@@ -57,6 +87,33 @@ if Rails.env.development?
     date: DateTime.new(2023, 12, 31, 20, 0, 0),
     bar: eskibiritoiles
   )
+
+  evento2 = Event.create(
+    name: 'Celebración de 1 año sobrio en Alcohólicos Anónimos',
+    description: 'Ven a celebrar con nosotros un año de sobriedad en el eskibiri bar. Habrá premios y sorpresas.',
+    date: DateTime.new(2023, 12, 31, 20, 0, 0),
+    bar: dondeeleskibiri
+  )
+
+  evento3 = Event.create(
+    name: 'Celebración de 1 año sobrio en Alcohólicos Anónimos',
+    description: 'Ven a celebrar con nosotros un año de sobriedad en el eskibiri bar. Habrá premios y sorpresas.',
+    date: DateTime.new(2023, 12, 31, 20, 0, 0),
+    bar: lospapusigmas
+  )
+
+  
+  3.times do
+    Event.create(
+      name: 'test evento aaaa',
+      description: 'test evento aaaa',
+      date: DateTime.new(2023, 12, 31, 20, 0, 0),
+      bar: eskibiritoiles
+    )
+  end
+  
+
+  
     
   # Crear eventos asociados a los bares
   events = bars.map do |bar|

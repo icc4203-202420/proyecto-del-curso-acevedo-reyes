@@ -201,10 +201,15 @@ function EventDetails() {
           {event.attendances.length && event.attendances.map((attendance, index) => (
             <React.Fragment key={attendance.id}>
               @{attendance.user.handle}
-              {index < event.attendances.length - 1 && ', '}
-              <br />han confirmado su asistencia
+              {index < event.attendances.length - 1 && ', '}  
             </React.Fragment>
           ))}
+          {event.attendances.length && (
+            <>
+              <br />
+              han confirmado su asistencia.
+            </>
+          )}
           
         </Typography>
       </Grid>

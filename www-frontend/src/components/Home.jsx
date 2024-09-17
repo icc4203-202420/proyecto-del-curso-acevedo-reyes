@@ -32,9 +32,6 @@ function Home() {
 
           <Map />
           
-          <Typography variant="body1" align="center" gutterBottom>
-            Descubre bares cercanos!!!
-          </Typography>
         </>
       )}
     </Box>
