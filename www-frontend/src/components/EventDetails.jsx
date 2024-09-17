@@ -61,7 +61,7 @@ function EventDetails() {
   }, [eventId]);
 
   useEffect(() => {
-    axios.get(`/api/v1/users/1/friendships`)
+    axios.get(`/api/v1/users/${user}/friendships`)
       .then(response => {
         console.log('RESPUSETA AMIGOS...:',response.data.friends);
         setFriends(response.data.friends);
@@ -265,6 +265,24 @@ function EventDetails() {
         <Grid item xs={1}>
         </Grid>
       </Grid>
+    )}
+
+    { !friends.length && (
+      <Grid container spacing={1} sx={{ mb: 3 }} >
+        <Grid item xs={1}>
+          <EmojiPeopleIcon fontSize='large'/>
+        </Grid>
+
+        <Grid item xs={10}>
+          <Typography variant="body2" align='center'>
+            Aún no tienes amigos.
+          </Typography>
+        </Grid>
+
+        <Grid item xs={1}>
+        </Grid>
+      </Grid>
+      
     )}
 
     <Typography fontWeight='bold' variant="h6" align="center">
