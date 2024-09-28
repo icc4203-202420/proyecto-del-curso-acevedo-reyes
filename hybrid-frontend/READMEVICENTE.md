@@ -53,7 +53,7 @@ en package.json, el main se refiere al archivo que se va a ejecutar.. esta por d
 
 correr con npm run start
 
-## Definicin de rutas
+## Definicion de rutas
 
 las rutas se definen de diferente manera en react native... se define segun archivos! p. ej, si quiero definir /beers/:id, entonces se crea
 

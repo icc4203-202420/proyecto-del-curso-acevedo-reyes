@@ -61,7 +61,7 @@ function EventDetails() {
   }, [eventId]);
 
   useEffect(() => {
-    axios.get(`/api/v1/users/1/friendships`)
+    axios.get(`/api/v1/users/${user}/friendships`)
       .then(response => {
         console.log('RESPUSETA AMIGOS...:',response.data.friends);
         setFriends(response.data.friends);
@@ -146,9 +146,18 @@ function EventDetails() {
 
     <br /><br /><br /><br /><br /><br />
     
+    {/*
     <Typography variant="body2" align="center">
       <VideocamOutlinedIcon fontSize='medium' />  
       Ver Galería
+    </Typography>
+    */}
+
+    <Typography variant="body2" align="center">
+      <Button component={RouterLink} to={`/events/${eventId}/pictures`} color="inherit">
+        <VideocamOutlinedIcon fontSize='medium' />  
+        Ver y subir Fotos a la Galería
+      </Button>
     </Typography>
 
     <Typography variant="h5" align="center">
