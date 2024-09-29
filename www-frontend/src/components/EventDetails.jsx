@@ -146,9 +146,18 @@ function EventDetails() {
 
     <br /><br /><br /><br /><br /><br />
     
+    {/*
     <Typography variant="body2" align="center">
       <VideocamOutlinedIcon fontSize='medium' />  
       Ver Galería
+    </Typography>
+    */}
+
+    <Typography variant="body2" align="center">
+      <Button component={RouterLink} to={`/events/${eventId}/pictures`} color="inherit">
+        <VideocamOutlinedIcon fontSize='medium' />  
+        Ver y subir Fotos a la Galería
+      </Button>
     </Typography>
 
     <Typography variant="h5" align="center">

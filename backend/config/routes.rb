@@ -26,10 +26,12 @@ Rails.application.routes.draw do
       resources :beers
       resources :events, only: [:index, :show]
       resources :attendances, only: [:index, :create]
-      
+      resources :event_pictures, only: [:index, :create, :destroy]
+
       get 'bars/:bar_id/events', to: 'events#bars_events_index'
       get 'beers/:id/bars', to: 'beers#bars'
       get 'users/:id/friendships', to: 'users#friendships'
+      get 'events/:id/event_pictures', to: 'event_pictures#event_index'
 
       resources :users do
         resources :reviews, only: [:index]
