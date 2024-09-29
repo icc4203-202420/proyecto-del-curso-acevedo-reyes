@@ -16,8 +16,6 @@ import EventPictures from './components/EventPictures';
 function App() {
   return (
     <>
-      <FixedBottomNav />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchTabs />} />
@@ -31,6 +29,8 @@ function App() {
         <Route path="/events/:eventId" element={<EventDetails />} />
         <Route path="/events/:eventId/pictures" element={<EventPictures />} />
       </Routes>
+
+      <FixedBottomNav />
     </>
   );
 }

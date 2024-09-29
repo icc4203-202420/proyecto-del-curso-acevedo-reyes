@@ -15,10 +15,15 @@ class API::V1::EventPicturesController < ApplicationController
 
   # GET /api/v1/events/:id/event_pictures
   def event_index
+    
     @event = Event.find(params[:id])
-    puts @event
     @event_pictures = @event.event_pictures
-    render json: {event: @event.as_json(include: :event_pictures)}, status: :ok
+
+    event_pictures_with_images = @event_pictures.map do |picture|
+      picture.as_json.merge(image_url: url_for(picture.image)) if picture.image.attached?
+    end
+
+    render json: { event: @event, event_pictures: event_pictures_with_images }, status: :ok
   end
 
   # POST /api/v1/event_pictures
@@ -50,16 +55,6 @@ class API::V1::EventPicturesController < ApplicationController
   def event_picture_params
     params.require(:event_picture).permit(:event_id, :user_id, :description, :image_base64)
   end
-
-  #def handle_image_attachment
-    
-    #if params[:event_picture][:image_base64].present?
-    #  @event_picture.image.attach(
-    #    data: params[:event_picture][:image_base64],
-    #    filename: "event_picture_#{@event_picture.event_id}_#{Time.now.to_i}.png"
-    #  )
-    #end
-  #end
 
   def handle_image_attachment
     image_data = params[:event_picture][:image_base64]
