@@ -4,11 +4,47 @@ class API::V1::UsersController < ApplicationController
   #before_action :verify_jwt_token, only: [:create, :update, :destroy]
   
   def index
-    @users = User.includes(:reviews, :address).all   
+    @users = User.all
+    render json: { 
+      users: @users.as_json(only: [:id, :first_name, :last_name, :email, :handle]) 
+    }, status: :ok
+  end
+
+  def show
+    @user = User.find_by(id: params[:id])
+    puts("USER:",@user.inspect)
+    events = Attendance.where(user_id: @user.id)
+    bars = []
+    if events.nil?
+      bars << "No events assistance was found for this user."
+    else
+      puts("ATTENDANCES: ", @events.inspect)
+      events.each do |attendance|
+      puts("DEBUGGING FOR", attendance.event_id)
+      barname = Bar.find_by(id: attendance.event_id)
+      if barname.nil?
+        puts("NOT FOUND ANY BAR")
+      else
+        puts("FOUND BAR:", barname.name)
+        bars << barname.name
+      
+      end
+     
+    end
+  end
+    puts("VARIABLE BARS:", bars)
+    if @user
+      render json: { 
+        user: @user.as_json(only: [:id, :first_name, :last_name, :email, :handle]).merge(bars: bars)
+      }, status: :ok
+    else
+      render json: { error: 'User not found' }, status: :not_found
+    end
   end
 
   # GET /api/v1/users/:id/friendships: retorna una lista de todas los user que son amigos segun el modelo Friendship
   def friendships
+    puts("LLAMANDO A USER CONTROLER?!")
     #@user = User.find(params[:id])
     @friends = @user.friends
     render json: { friends: @friends }, status: :ok
@@ -16,15 +52,25 @@ class API::V1::UsersController < ApplicationController
 
   # POST /api/v1/users/:id/friendships: crea una nueva amistad entre dos usuarios
   def create_friendship
+    puts("LLAMANDO A USER CONTROLER?!")
     @user = User.find(params[:id])
     @friend = User.find(params[:friend_id])
-    @bar = Bar.find(params[:bar_id])
-    @friendship = Friendship.new(user: @user, friend: @friend, bar: @bar)
-    
-    if @friendship.save
-      render json: { message: 'Friendship created successfully.' }, status: :ok
+    @bar = Bar.find_by(name: params[:bar_id])
+    @friendship = Friendship.find_by(user: @user, friend: @friend)
+    puts("SEARCHED FOR FRIENDSHIP, result: ", @friendship)
+    if @friendship.nil?
+      puts("BAR FOUND!", @bar.inspect)
+      @friendship = Friendship.new(user: @user, friend: @friend, bar: @bar)
+      
+      if @friendship.save
+        render json: { message: 'Friendship created successfully.' }, status: :ok
+      else
+        render json: @friendship.errors, status: :unprocessable_entity
+      end
     else
-      render json: @friendship.errors, status: :unprocessable_entity
+      puts("YA SOS AMIGO!!")
+      render json: { message: 'You are already friends with this fella!!' }, status: :unprocessable_entity
+    
     end
   end
 
@@ -49,6 +95,14 @@ class API::V1::UsersController < ApplicationController
   private
 
   def set_user
+    puts("CALLING SET USER")
+    puts(params.inspect)
+    if params[:user_id] == ":id"
+      params[:id] = params[:user].to_i
+      puts("UPDATING PARAMS")
+    end
+    puts("ACTUAL PARAMS:")
+    puts(params.inspect)
     @user = User.find(params[:id])
   end
 
