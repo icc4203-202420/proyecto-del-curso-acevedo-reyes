@@ -276,6 +276,24 @@ function EventDetails() {
       </Grid>
     )}
 
+    { !friends.length && (
+      <Grid container spacing={1} sx={{ mb: 3 }} >
+        <Grid item xs={1}>
+          <EmojiPeopleIcon fontSize='large'/>
+        </Grid>
+
+        <Grid item xs={10}>
+          <Typography variant="body2" align='center'>
+            Aún no tienes amigos.
+          </Typography>
+        </Grid>
+
+        <Grid item xs={1}>
+        </Grid>
+      </Grid>
+      
+    )}
+
     <Typography fontWeight='bold' variant="h6" align="center">
       {event.description}
     </Typography><br />
