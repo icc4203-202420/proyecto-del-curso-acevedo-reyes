@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { Typography, AppBar, Button, Toolbar, Divider, Box, Grid, TextField } from '@mui/material';
+import { Typography, AppBar, Button, Toolbar, Divider, Box, Grid, TextField, Menu, MenuItem, IconButton } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import FolderIcon from '@mui/icons-material/Folder';  // Para el ícono del botón de "Subir foto"
 import axios from 'axios';
 import useAxios from 'axios-hooks';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
+//import camera from '../hooks/camera';
+import CameraCapture from './CameraCapture';
 
 const validationSchema = Yup.object({
   description: Yup.string().max(255, 'La descripción es muy larga'),
@@ -43,10 +46,24 @@ function EventPictures() {
   const user = Math.round(localStorage.getItem('user'));
   const token = localStorage.getItem('token');
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpen(true);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setOpen(false);
+  };
+
   useEffect(() => {
     axios.get(`/api/v1/events/${eventId}/event_pictures`)
       .then(response => {
-        console.log('RESPUSETA EVENTOS...:',response);
+        console.log('RESPUESTA EVENTOS...:',response);
         setEvent(response.data.event);
         setEventPictures(response.data.event_pictures);
         setGetLoading(false);
@@ -73,7 +90,16 @@ function EventPictures() {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
 
-      const base64Image = await convertToBase64(values.image);
+      let base64Image;
+
+      // Si el valor de la imagen es un archivo (por ejemplo, de un input type="file")
+      if (values.image instanceof File) {
+        base64Image = await convertToBase64(values.image);
+      } else {
+        // Si ya es una cadena base64 (imagen tomada de la cámara)
+        base64Image = values.image; 
+      }
+      //const base64Image = await convertToBase64(values.image);
 
       const response = await executePost({
         data: {
@@ -97,69 +123,71 @@ function EventPictures() {
     }
   }
 
-  if (getloading) return <Typography>Loading...</Typography>;
-  if (getError) return <Typography>Error al fetchear imágenes del evento!</Typography>;
+  
 
-    
+  if (loading || getloading) return <Typography>Loading...</Typography>;
+  if (error || getError) return <Typography>Error al fetchear imágenes del evento!</Typography>;
+
   return (
   <>
     <AppBar position="fixed" sx={{bgcolor: "lightgray"}}>
       <Typography color="black" align="left">
-        
         <Button component={RouterLink} to={`/events/${eventId}`} color="inherit">
           <NavigateBeforeIcon />
           Evento
         </Button>
-
       </Typography>
     </AppBar>
 
     <Toolbar />
 
+    <Typography variant="h5" align="center" sx={{ mt: 2 }}>
+      Galería de Imágenes del evento {event.name}
+    </Typography>
+
     {/* galeria */}
-    <Box sx={{ flexGrow: 1, p: 2 }}>
-        
-      <Typography variant="h4" align="center">
-        Fotos del evento
-      </Typography>
-
-      {/* Mostrar la galería de imágenes */}
-      { !eventPictures && (
-        <Typography variant="body1" align="center">
-          No hay fotos para mostrar
-        </Typography>
-      )}
-
-      { eventPictures && (
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          {eventPictures.map((picture) => (
-            <Grid item xs={12} sm={6} md={4} key={picture.id}>
-              
-              <Box
-                component="img"
-                sx={{
-                  height: 300,
-                  width: '100%',
-                  objectFit: 'cover',
-                  borderRadius: 1,
-                }}
-                alt={picture.description || 'Imagen del evento'}
-                src={picture.image_url} // Suponiendo que el backend devuelve la URL de la imagen
-              />
-
-              <Typography variant="body2" align="center">
-                {picture.description}
-              </Typography>
-            
-            </Grid>
-          ))}
-        </Grid>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        overflowY: 'scroll',
+        height: '30vh',
+        mt: 2,
+        mb: 2,
+        borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        p: 2,
+        bgcolor: 'white',
+      }}
+    >
+      {eventPictures.length > 0 ? (
+        eventPictures.map((picture, index) => (
+          <Box key={picture.id} sx={{ mb: 2, textAlign: 'center', width: '100%' }}>
+            <Box
+              component="img"
+              sx={{
+                width: '100%',
+                maxHeight: 300,
+                objectFit: 'cover',
+                borderRadius: 2,
+              }}
+              alt={picture.description || 'Imagen del evento'}
+              src={picture.image_url}
+            />
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              {picture.description}
+            </Typography>
+          </Box>
+        ))
+      ) : (
+        <Typography>No hay fotos disponibles. Sé el primero!</Typography>
       )}
     </Box>
-
+  
     <Divider />
 
-    {/* Añadir el formulario para subir una imagen */}
+    {/* formulario*/}
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
@@ -167,40 +195,110 @@ function EventPictures() {
     >
       {({ setFieldValue, isSubmitting, errors, touched }) => (
         <Form>
-          <Field
-            name="description"
-            as={TextField}
-            label="Descripción"
-            fullWidth
-            margin="normal"
-            error={touched.description && !!errors.description}
-            helperText={touched.description && errors.description}
-          />
+
+          <Grid container spacing={1} sx={{ mt: 2 }}>
+
+            <Grid item xs={12}>
+              <Typography variant="h6" align="center">
+                Sube una foto del evento!
+              </Typography>
+            </Grid>
+
+            <Grid item xs={1}>
+            </Grid>
+
+            {/* descripción */}
+            <Grid item xs={6}>
+              <Field
+              name="description"
+              as={TextField}
+              label="Descripción"
+              fullWidth
+              margin="normal"
+              error={touched.description && !!errors.description}
+              helperText={touched.description && errors.description}
+            />
+            </Grid>
+
+            <Grid item xs={4}>
+              {/* Botón para subir foto */}
+              <Button
+                aria-controls = {open ? 'photo-menu' : undefined}
+                aria-haspopup = "true"
+                aria-expanded = {open ? 'true' : undefined}
+                onClick       = {handleMenuClick}
+                startIcon     = {<FolderIcon />}
+                variant       = "contained"
+                sx            = {{ mt: 2 }}
+              >
+                Subir Foto
+              </Button>
+            </Grid>
+
+            <Grid item xs={1}>
+            </Grid>
+
+            <Grid item xs={5}>
+            </Grid>
+
+            <Grid item xs={1}> 
+              <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={isSubmitting}
+              sx={{}}
+              >
+                {isSubmitting ? 'Subiendo...' : 'Enviar'}
+              </Button>
+            </Grid>
+
+          </Grid>
+
+          {/* desplegable para elegir entre subir o tomar foto */}
+          <Menu
+            id       = "photo-menu"
+            anchorEl = {anchorEl}
+            open     = {open}
+            onClose  = {handleMenuClose}
+          >
+            <MenuItem 
+              onClick = {() => {
+                document.getElementById('file').click();
+                handleMenuClose();
+              }}
+            >
+              Elegir Foto
+            </MenuItem>
+
+            <MenuItem onClick={() => setCapturedImage(null)}>
+              <CameraCapture onCapture={(imageBase64) => {
+                setFieldValue("image", imageBase64);
+                handleMenuClose();
+              }} />
+            </MenuItem>
+
+          </Menu>
 
           <input
             id="file"
             name="image"
             type="file"
             accept="image/*"
+            style={{ display: 'none' }}
             onChange={(event) => {
               setFieldValue("image", event.currentTarget.files[0]);
             }}
           />
           {touched.image && errors.image && <div style={{ color: 'red' }}>{errors.image}</div>}
-
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            disabled={isSubmitting}
-            sx={{ mt: 2 }}
-          >
-            {isSubmitting ? 'Subiendo...' : 'Subir Foto'}
-          </Button>
-
+  
         </Form>
       )}
     </Formik>
+
+    <Toolbar />
+    <Toolbar />
+
 
   </>
   );
