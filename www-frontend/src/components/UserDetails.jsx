@@ -11,9 +11,12 @@ import placeHolder from '../assets/placeholder.jpg';
 function UserDetails() {
   const { userId } = useParams();  // Obtener el ID del usuario desde la URL
   const [user, setUser] = useState(null);
+  const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedBar, setSelectedBar] = useState(null); // Bar seleccionado en el autocomplete
+
+  const currentUser = parseInt(localStorage.getItem('user'));
 
   useEffect(() => { 
     axios.get(`http://127.0.0.1:3001/api/v1/users/${userId}`)
@@ -27,11 +30,23 @@ function UserDetails() {
       });
   }, [userId]);
 
+  useEffect(() => {
+    axios.get(`http://127.0.0.1:3001/api/v1/users/${currentUser}/friendships`)
+      .then(response => {
+        console.log(response.data.friends);
+        setFriends(response.data.friends);
+      })
+      .catch(error => {
+        setError(error);
+        setLoading(false);
+      });
+  }, [currentUser, friends]);
+      
   const handleAddFriend = () => {
     if (selectedBar) {
       axios.post('http://127.0.0.1:3001/api/v1/users/:id/friendships', {
-        user: localStorage.getItem('user'),
-        user_id: localStorage.getItem('user'),
+        user: currentUser,
+        user_id: currentUser,
         friend_id: userId,  // Usuario del perfil
         bar_id: selectedBar // Bar seleccionado
       })
@@ -51,6 +66,7 @@ function UserDetails() {
       alert("Por favor selecciona un bar.");
     }
   };
+  
 
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">Failed to load user.</Typography>;
@@ -72,23 +88,24 @@ function UserDetails() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Toolbar /> 
-      <Typography variant="h4" component="h1" align="center" gutterBottom>
-          ola usuario con id {localStorage.getItem('user')} estas logeado...
-        </Typography>
+
+      
       <Box mt={10} p={2} border="1px solid #ccc" width="70%">
-        <Grid container spacing={2} alignItems="center">
+        
+        <Grid container spacing={1} alignItems="center">
           {/* Imagen a la izquierda */}
-          <Grid item xs={4}>
-            <img src={placeHolder} alt={`${user.handle} image`} style={{ width: '200px', height: 'auto' }} />
+          <Grid item xs={2}>
+            <img src={placeHolder} alt={`${user.handle} image`} style={{ width: '100px', height: 'auto' }} />
           </Grid>
+
+          <Grid item xs={2}></Grid>
 
           {/* Texto a la derecha */}
           <Grid item xs={8}>
-            <Typography variant="h4">
+            <Typography variant="h6">
               <strong> <PersonAddAltIcon sx={{ fontSize: 35 }} />  @</strong> {user.handle}
             </Typography>
-            <Typography variant="body1">
+            <Typography variant="body2">
               Acá debería haber una descripción, pero recién ahora me doy cuenta de que eso nunca
               <br></br>estuvo considerado en el modelo, así que voy a dejar por estándar el nombre y apellido:
               <br></br> <strong>{user.first_name} {user.last_name}</strong>
@@ -96,28 +113,50 @@ function UserDetails() {
           </Grid>
         </Grid>
         
-        <Typography variant="h5"> <BookmarkAddedIcon sx={{ fontSize: 35 }} /> Añade un bar de un evento en que se hayan conocido</Typography>
+        { user.id !== currentUser && !friends.some(friend => friend.id === user.id) && (
+          
+          <>
+          <Typography variant="h5"> 
+            <BookmarkAddedIcon sx={{ fontSize: 35 }} /> 
+            Añade un bar de un evento en que se hayan conocido
+          </Typography>
 
-        {/* Autocomplete */}
-        <Box mt={4} display="flex" alignItems="center">
-          <Autocomplete
-            disablePortal
-            options={user.bars}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Selecciona una opción" />}
-            onChange={(event, newValue) => setSelectedBar(newValue)} // Almacenar la opción seleccionada
-          />
-          {/* Botón "Añadir Amigo" */}
-          <Button
-            variant="contained"
-            sx={{ ml: 2 }}
-            onClick={handleAddFriend} // Al hacer clic, crear la amistad
-          >
-            Añadir Amigo
-          </Button>
-        </Box>
+          
+          {/* Autocomplete */}
+          <Box mt={4} display="flex" alignItems="center">
+            <Autocomplete
+              disablePortal
+              options={user.bars}
+              sx={{ width: 300 }}
+              renderInput={(params) => <TextField {...params} label="Selecciona una opción" />}
+              onChange={(event, newValue) => setSelectedBar(newValue)} // Almacenar la opción seleccionada
+            />
+            {/* Botón "Añadir Amigo" */}
+            <Button
+              variant="contained"
+              sx={{ ml: 2 }}
+              onClick={handleAddFriend} // Al hacer clic, crear la amistad
+            >
+              Añadir Amigo
+            </Button>
+          </Box>
+
+          </>
+        )}
+
+        { user.id !== currentUser && friends.some(friend => friend.id === user.id) && (
+          <Typography variant="h5" align='center'> 
+            <BookmarkAddedIcon sx={{ fontSize: 35 }} /> 
+            Ya son amigos!!
+          </Typography>
+        )}
+        
       </Box>
+
+      <Toolbar /> 
     </Box>
+
+    
   );
 }
 

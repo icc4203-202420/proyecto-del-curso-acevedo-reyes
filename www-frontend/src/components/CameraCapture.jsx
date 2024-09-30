@@ -99,7 +99,9 @@ function CameraCapture({ onCapture }) {
           <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
         </>
       ) : (
-        <button onClick={() => setCameraOn(true)}>Abrir Cámara</button>
+        <Button onClick={() => setCameraOn(true)}>
+          Abrir Cámara
+        </Button>
       )}
     </div>
   );

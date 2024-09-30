@@ -25,6 +25,7 @@ axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 function EventDetails() {
 
   const [event, setEvent] = useState([]);
+  const [bar, setBar] = useState([]);
   const [friends, setFriends] = useState([]);
   const [getError, setGetError] = useState(null);
   const [getloading, setGetLoading] = useState(true);
@@ -51,6 +52,7 @@ function EventDetails() {
       .then(response => {
         console.log('RESPUSETA EVENTOS...:',response);
         setEvent(response.data.event);
+        setBar(response.data.event.bar);
         setGetLoading(false);
       })
       .catch(error => {
@@ -108,7 +110,7 @@ function EventDetails() {
     }
   }
 
-  console.log("Event>>>>:",event);
+  console.log("Bar>>>>:", bar);
 
   if (getloading) return <Typography>Loading...</Typography>;
   if (getError || error) return <Typography>Error al fetchear evento y/o amigos!</Typography>;
@@ -116,7 +118,7 @@ function EventDetails() {
     <>
     <AppBar position="static" sx={{ bgcolor: 'lightgray' }}>
       <Toolbar>
-        <Button onClick={() => navigate(`/beers/${beerId}`)} sx={{ color: 'black' }}>
+        <Button onClick={() => navigate(`/bars/${bar.id}`)} sx={{ color: 'black' }}>
         <NavigateBeforeIcon />
           Volver
         </Button>
@@ -134,7 +136,7 @@ function EventDetails() {
     <AppBar position="fixed" sx={{bgcolor: "lightgray"}}>
       
       <Typography color="black" align="left">
-        <Button component={RouterLink} to={`/bars/${event.bar.id}`} color="inherit">
+        <Button component={RouterLink} to={`/bars/${bar.id}`} color="inherit">
           <NavigateBeforeIcon />
           Bar
         </Button>
@@ -146,13 +148,6 @@ function EventDetails() {
 
     <br /><br /><br /><br /><br /><br />
     
-    {/*
-    <Typography variant="body2" align="center">
-      <VideocamOutlinedIcon fontSize='medium' />  
-      Ver Galería
-    </Typography>
-    */}
-
     <Typography variant="body2" align="center">
       <Button component={RouterLink} to={`/events/${eventId}/pictures`} color="inherit">
         <VideocamOutlinedIcon fontSize='medium' />  

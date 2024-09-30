@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-import { Typography, AppBar, Button, Toolbar, Divider, Box, Grid, TextField, Menu, MenuItem, IconButton } from '@mui/material';
+import { Typography, AppBar, Button, Toolbar, Divider, Box, Grid, TextField, Menu, MenuItem, IconButton, Autocomplete, Chip } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import FolderIcon from '@mui/icons-material/Folder';  // Para el ícono del botón de "Subir foto"
 import axios from 'axios';
@@ -50,6 +50,14 @@ function EventPictures() {
   const [open, setOpen] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
 
+  const [users, setUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [description, setDescription] = useState('');
+
+  const handleTagChange = (event, newValue) => {
+    setSelectedUsers(newValue);
+  };
+
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);
@@ -74,6 +82,21 @@ function EventPictures() {
         setGetLoading(false);
       });
   }, [eventId]);
+
+  useEffect(() => {
+    axios.get('/api/v1/users')
+      .then(response => {
+        console.log('RESPUESTA USUARIOS...:',response);
+        setUsers(response.data.users);
+        setGetLoading(false);
+      })
+      .catch(error => {
+        setGetError(error);
+        console.log("ERROR>>>>:",error);
+        setGetLoading(false);
+      });
+  }, []);
+
 
   const [{ data, loading, error }, executePost] = useAxios(
     {
@@ -113,7 +136,7 @@ function EventPictures() {
       });
 
       console.log('RESPONSE>>>>:',response);  
-      resetForm(); //// Aquí podrías recargar las imágenes o actualizar el estado directamente con la nueva imagen.
+      resetForm(); 
     } 
     catch (error) {
       console.error('ERROR>>>>:',error); 
@@ -122,8 +145,6 @@ function EventPictures() {
       setSubmitting(false);
     }
   }
-
-  
 
   if (loading || getloading) return <Typography>Loading...</Typography>;
   if (error || getError) return <Typography>Error al fetchear imágenes del evento!</Typography>;
@@ -163,13 +184,14 @@ function EventPictures() {
     >
       {eventPictures.length > 0 ? (
         eventPictures.map((picture, index) => (
+          
           <Box key={picture.id} sx={{ mb: 2, textAlign: 'center', width: '100%' }}>
             <Box
               component="img"
               sx={{
                 width: '100%',
-                maxHeight: 300,
-                objectFit: 'cover',
+                maxHeight: 200,
+                objectFit: '',
                 borderRadius: 2,
               }}
               alt={picture.description || 'Imagen del evento'}
@@ -178,6 +200,8 @@ function EventPictures() {
             <Typography variant="body2" sx={{ mt: 1 }}>
               {picture.description}
             </Typography>
+
+            <Divider sx={{my: 2, borderBottomWidth: 3}}/>
           </Box>
         ))
       ) : (
@@ -193,32 +217,71 @@ function EventPictures() {
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
     >
-      {({ setFieldValue, isSubmitting, errors, touched }) => (
+      {({ setFieldValue, isSubmitting, errors, touched, values }) => (
+        
         <Form>
 
           <Grid container spacing={1} sx={{ mt: 2 }}>
 
             <Grid item xs={12}>
               <Typography variant="h6" align="center">
-                Sube una foto del evento!
+                ¡Sube una foto del evento!
               </Typography>
             </Grid>
 
             <Grid item xs={1}>
             </Grid>
-
-            {/* descripción */}
+        
+            {/* descripción + etiquetar usuarios */}
             <Grid item xs={6}>
-              <Field
-              name="description"
-              as={TextField}
-              label="Descripción"
-              fullWidth
-              margin="normal"
-              error={touched.description && !!errors.description}
-              helperText={touched.description && errors.description}
-            />
+              
+              <Autocomplete
+                multiple
+                options        = {users}
+                getOptionLabel = {(option) => option.handle}
+                value          = {selectedUsers}
+                //onChange       = {handleTagChange}
+                onChange         = {(event, newValue) => {
+                  setSelectedUsers(newValue);
+                  
+                  const descriptionWithTags = `${newValue.map(user => `@${user.handle}`).join(' ')}`;
+                  setFieldValue('description', descriptionWithTags);
+                }}
+                renderTags     = {
+                  (value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip 
+                        key   = {option.id} 
+                        label = {option.handle} 
+                        {...getTagProps({ index })} 
+                      />
+                    )
+                  )
+                }
+                renderInput    = {(params) => (
+                  <Field
+                    {...params}
+                    name       = "description"
+                    as         = {TextField}
+                    label      = "Etiqueta a papus!"
+                    fullWidth
+                    margin     = "normal"
+                    error      = {touched.description && !!errors.description}
+                    helperText = {touched.description && errors.description}
+                    onChange   = {(event) => {
+                      // Actualiza solo la descripción, sin perder los tags
+                      const descriptionWithoutTags = event.target.value;
+                      const descriptionWithTags = `${descriptionWithoutTags} ${selectedUsers.map(user => `@${user.handle}`).join(' ')}`;
+                      setFieldValue('description', descriptionWithTags);
+                    
+                    }}
+                    
+                  />
+                )}
+
+              />
             </Grid>
+
 
             <Grid item xs={4}>
               {/* Botón para subir foto */}
@@ -243,11 +306,11 @@ function EventPictures() {
 
             <Grid item xs={1}> 
               <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={isSubmitting}
-              sx={{}}
+                type     = "submit"
+                variant  = "contained"
+                color    = "primary"
+                disabled = {isSubmitting}
+                sx       = {{ mx: -1}}
               >
                 {isSubmitting ? 'Subiendo...' : 'Enviar'}
               </Button>
@@ -281,12 +344,12 @@ function EventPictures() {
           </Menu>
 
           <input
-            id="file"
-            name="image"
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={(event) => {
+            id       = "file"
+            name     = "image"
+            type     = "file"
+            accept   = "image/*"
+            style    = {{ display: 'none' }}
+            onChange = {(event) => {
               setFieldValue("image", event.currentTarget.files[0]);
             }}
           />
@@ -298,7 +361,6 @@ function EventPictures() {
 
     <Toolbar />
     <Toolbar />
-
 
   </>
   );
