@@ -1,12 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Rating, Button } from 'react-native-elements';
-import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import useAxios from 'axios-hooks';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+
+const validationSchema = Yup.object({
+  text: Yup.string()
+    .required('La reseña es requerida')
+    .test('wordCount', 'La reseña debe contener al menos 15 palabras.', (value) => {
+      if (value) {
+        const wordCount = value.trim().split(/\s+/).length;
+        return wordCount >= 15;
+      }
+      return false;
+    }),
+  rating: Yup.number().min(1, 'La calificación debe ser al menos 1').max(5, 'La calificación no puede ser mayor a 5').required('La calificación es requerida'),
+});
+  
+const initialValues = {
+  text: '',
+  rating: 1,
+};
 
 const NGROK_URL = process.env.NGROK_URL;
 
-const BeerReview = ({ route }) => {
+const ReviewBeer = ({ route }) => {
   const { beerId } = route.params;
   const [beer, setBeer] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -150,5 +171,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BeerReview;
+export default ReviewBeer;
 

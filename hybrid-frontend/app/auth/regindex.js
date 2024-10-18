@@ -3,7 +3,11 @@ import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import useAxios from 'axios-hooks';
 import { useNavigation } from '@react-navigation/native';
+
+const NGROK_URL = process.env.NGROK_URL;
 
 // Esquema de validación
 const validationSchema = Yup.object({
@@ -31,15 +35,72 @@ const initialValues = {
   country: '',
 };
 
-function SignIn() {
+function SignUp() {
+  
   const navigation = useNavigation();
+  const [serverError, setServerError] = React.useState('');
+  const [signupSuccess, setSignupSuccess] = React.useState(false);
+  
   const handleBack = () => {
     navigation.navigate('LogIn');
   };
 
-  const handleSubmit = (values) => {
-    console.log('PRESIONASTE REGISTRAR:', values);
-    // Aquí se manejaría el envío de datos al backend
+  console.log("URL NGROK>", NGROK_URL)
+
+  // POST con axios-hooks
+  const [{ data, loading, error }, executePost] = useAxios(
+    {
+      url: `${NGROK_URL}/api/v1/signup`,
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      },
+    },
+    { manual: true }
+  );
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+
+      console.log('PRESIONASTE REGISTRAR:', values);
+
+      const response = await executePost({
+        data: {
+          user: {
+            email: values.email,
+            first_name: values.first_name,
+            last_name: values.last_name,
+            handle: values.handle,
+            password: values.password,
+          },
+          address: {
+            line1: values.line1,
+            line2: values.line2,
+            city: values.city,
+            country: values.country,
+        }
+      }});
+      console.log(response);
+      
+      setTimeout(() => {
+        navigation.navigate('LogIn');
+      }, 1000);
+
+    }
+    catch (error) {
+
+      if (error.response && error.response.status === 401) {
+        setServerError('Credenciales incorrectas');
+      }
+      else {
+        setServerError('Error en el servidor xdlol..');
+      }
+      console.error("Error durante la funcion SignUp:", error)
+    }
+    finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -55,86 +116,94 @@ function SignIn() {
         {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
           <>
             <TextInput
-              style={styles.input}
-              placeholder="Email"
-              onChangeText={handleChange('email')}
-              onBlur={handleBlur('email')}
-              value={values.email}
+              style        = {styles.input}
+              placeholder  = "Email"
+              onChangeText = {handleChange('email')}
+              onBlur       = {handleBlur('email')}
+              value        = {values.email}
             />
             {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
             <TextInput
-              style={styles.input}
-              placeholder="Nombre"
-              onChangeText={handleChange('first_name')}
-              onBlur={handleBlur('first_name')}
-              value={values.first_name}
+              style        = {styles.input}
+              placeholder  = "Nombre"
+              onChangeText = {handleChange('first_name')}
+              onBlur       = {handleBlur('first_name')}
+              value        = {values.first_name}
             />
             {touched.first_name && errors.first_name && <Text style={styles.errorText}>{errors.first_name}</Text>}
 
             <TextInput
-              style={styles.input}
-              placeholder="Apellido"
-              onChangeText={handleChange('last_name')}
-              onBlur={handleBlur('last_name')}
-              value={values.last_name}
+              style        = {styles.input}
+              placeholder  = "Apellido"
+              onChangeText = {handleChange('last_name')}
+              onBlur       = {handleBlur('last_name')}
+              value        = {values.last_name}
             />
             {touched.last_name && errors.last_name && <Text style={styles.errorText}>{errors.last_name}</Text>}
 
             <TextInput
-              style={styles.input}
-              placeholder="Nombre de Usuario (Handle)"
-              onChangeText={handleChange('handle')}
-              onBlur={handleBlur('handle')}
-              value={values.handle}
+              style        = {styles.input}
+              placeholder  = "Nombre de Usuario (Handle)"
+              onChangeText = {handleChange('handle')}
+              onBlur       = {handleBlur('handle')}
+              value        = {values.handle}
             />
             {touched.handle && errors.handle && <Text style={styles.errorText}>{errors.handle}</Text>}
 
             <TextInput
-              style={styles.input}
-              placeholder="Contraseña"
+              style           = {styles.input}
+              placeholder     = "Contraseña"
               secureTextEntry
-              onChangeText={handleChange('password')}
-              onBlur={handleBlur('password')}
-              value={values.password}
+              onChangeText    = {handleChange('password')}
+              onBlur          = {handleBlur('password')}
+              value           = {values.password}
             />
             {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
             <TextInput
-              style={styles.input}
-              placeholder="Calle"
-              onChangeText={handleChange('line1')}
-              onBlur={handleBlur('line1')}
-              value={values.line1}
+              style        = {styles.input}
+              placeholder  = "Calle"
+              onChangeText = {handleChange('line1')}
+              onBlur       = {handleBlur('line1')}
+              value        = {values.line1}
             />
 
             <TextInput
-              style={styles.input}
-              placeholder="Dpto, Piso, etc."
-              onChangeText={handleChange('line2')}
-              onBlur={handleBlur('line2')}
-              value={values.line2}
+              style        = {styles.input}
+              placeholder  = "Dpto, Piso, etc."
+              onChangeText = {handleChange('line2')}
+              onBlur       = {handleBlur('line2')}
+              value        = {values.line2}
             />
 
             <TextInput
-              style={styles.input}
-              placeholder="Ciudad"
-              onChangeText={handleChange('city')}
-              onBlur={handleBlur('city')}
-              value={values.city}
+              style        = {styles.input}
+              placeholder  = "Ciudad"
+              onChangeText = {handleChange('city')}
+              onBlur       = {handleBlur('city')}
+              value        = {values.city}
             />
 
             <TextInput
-              style={styles.input}
-              placeholder="País"
-              onChangeText={handleChange('country')}
-              onBlur={handleBlur('country')}
-              value={values.country}
+              style        = {styles.input}
+              placeholder  = "País"
+              onChangeText = {handleChange('country')}
+              onBlur       = {handleBlur('country')}
+              value        = {values.country}
             />
 
             <View style={styles.buttonContainer}>
-              <Button title="¡Ya estas registrado? ¡Inicia sesión!" onPress={handleBack} color="orange" />
-              <Button title="Registrar" onPress={handleSubmit} />
+              <Button 
+                title="¿Ya estas registrado? ¡Inicia sesión!" 
+                onPress={handleBack} 
+                color="orange" 
+              />
+              
+              <Button 
+                title="Registrar" 
+                onPress={handleSubmit} 
+              />
             </View>
           </>
         )}
@@ -180,4 +249,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignIn;
+export default SignUp;

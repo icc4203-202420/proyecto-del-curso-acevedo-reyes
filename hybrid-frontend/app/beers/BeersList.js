@@ -3,16 +3,22 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
+const NGROK_URL = process.env.NGROK_URL;
+
 const BeersList = ({ searchKeywords }) => {
   const [beers, setBeers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation(); // Hook de navegación
 
+  
+  console.log("URL NGROK>", NGROK_URL)
+  
+  /*
   useEffect(() => {
-    axios.get('http://127.0.0.1:3001/api/v1/beers')
+    axios.get(`${NGROK_URL}/api/v1/beers`)
       .then(response => {
-        setBeers(response.data.beers);
+        setBeers(response.data.beers || []);
         setLoading(false);
       })
       .catch(error => {
@@ -20,6 +26,29 @@ const BeersList = ({ searchKeywords }) => {
         setLoading(false);
       });
   }, []);
+  */
+
+  useEffect(() => {
+    const fetchBeers = async () => {
+      try {
+        const response = await axios.get(`${NGROK_URL}/api/v1/beers`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        console.log("Response>", response);
+        setBeers(response.data.beers || []);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    }
+
+    fetchBeers();
+  }, []);
+
+  console.log("Beers>", beers)
 
   const filteredBeers = beers.filter(beer =>
     beer.name.toLowerCase().includes(searchKeywords.toLowerCase())
