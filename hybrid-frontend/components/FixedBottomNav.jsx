@@ -55,7 +55,6 @@ import * as React from 'react';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import App from "../app/index"
 import UserInfo from "../app/user/index"
 
 const Tab = createBottomTabNavigator();
