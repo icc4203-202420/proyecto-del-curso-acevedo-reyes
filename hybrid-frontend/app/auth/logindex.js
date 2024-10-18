@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 import { useNavigation } from '@react-navigation/native'; // Importa el hook de navegación
 import axios from 'axios';
 import useAxios from 'axios-hooks';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NGROK_URL = process.env.NGROK_URL;
 
@@ -64,11 +65,17 @@ function LogIn() {
       
       console.log(response);
       //const receivedToken = response.headers['authorization'];
-      //const receivedUser = response.data.status.data.user.id;
+      const receivedUser = response.data.status.data.user.id;
 
-      //if (receivedUser) {
-      //  localStorage.setItem('user', receivedUser);
-      //}
+      if (receivedUser) {
+        try {
+          await AsyncStorage.setItem('user', receivedUser);
+          console.log('user recibido!', receivedUser);
+        }
+        catch (error) {
+          console.error("Error en el guardado del usuario:", error);
+        }
+      }
 
       //if (receivedToken) {
       //  localStorage.setItem('token', receivedToken);

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
 import { Rating, Button } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import useAxios from 'axios-hooks';
-import { Formik, Form, Field } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const validationSchema = Yup.object({
   text: Yup.string()
@@ -19,7 +20,7 @@ const validationSchema = Yup.object({
     }),
   rating: Yup.number().min(1, 'La calificación debe ser al menos 1').max(5, 'La calificación no puede ser mayor a 5').required('La calificación es requerida'),
 });
-  
+
 const initialValues = {
   text: '',
   rating: 1,
@@ -29,109 +30,113 @@ const NGROK_URL = process.env.NGROK_URL;
 
 const ReviewBeer = ({ route }) => {
   const { beerId } = route.params;
-  const [beer, setBeer] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [reviews, setReviews] = useState([]);
-  const [avgRating, setAvgRating] = useState(0);
-  const [userReview, setUserReview] = useState(null);
-
+  const [user, setUser] = useState(null);
+  const [serverError, setServerError] = useState("");
+  
   const navigation = useNavigation();
 
-  console.log("URL NGROK>", NGROK_URL)
-  console.log("Beer ID>", beerId)
-  
-  /*
+  //fetchear el usuario (todavia no guardamos el token si jejejej)
   useEffect(() => {
-    axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`)
-      .then(response => {
-        const fetchedBeer = response.data.beer;
-        setBeer(fetchedBeer);
-        setReviews(fetchedBeer.reviews || []);
-        setAvgRating(fetchedBeer.avg_rating || 0);
-
-        const userId = 1; // Simulación del user ID
-        const userReview = fetchedBeer.reviews.find(review => review.user.id === userId);
-        setUserReview(userReview);
-
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-      });
-  }, [beerId]);
-  */
-
-  useEffect(() => {
-    const fetchBeerReviews = async () => {
+    const getUser = async () => {
       try {
-        const response = await axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`, {
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
-        });
-        console.log("Response>", response);
-        
-        const fetchedBeer = response.data.beer;
-        setBeer(fetchedBeer);
-        setReviews(fetchedBeer.reviews || []);
-        setAvgRating(fetchedBeer.avg_rating || 0);
-
-        const userId = 1; // Simulación del user ID
-        const userReview = fetchedBeer.reviews.find(review => review.user.id === userId);
-        setUserReview(userReview);
-
-        setLoading(false);
-        
-      } catch (error) {
-        setError(error);
-        setLoading(false);
+        const currentUser = await AsyncStorage.getItem('user');
+        setUser(Math.round(currentUser));
       }
+      catch (error) {
+        console.error(error);
+      }
+    };
+
+    getUser();
+  }, []);
+
+  const [{ data, loading, error }, executePost] = useAxios(
+    {
+      url: `${NGROK_URL}/api/v1/reviews`,
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'ngrok-skip-browser-warning': 'true'
+      },
+    },
+    { manual: true }
+  );
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    try {
+      if (user === null) {
+        setServerError('Debes estar logueado para hacer una review');
+        return;
+      }
+
+      const response = await executePost({
+        data: {
+          review: {
+            text: values.text,
+            rating: values.rating,
+            beer_id: Math.round(beerId),
+          },
+          user: {
+            id: user,
+          }
+        }
+      });
+
+      console.log("RESPUESTA>", response);
+    
+      navigation.goBack();
+        
+    } catch (error) {
+      setServerError('Hubo un error al enviar la reseña');
+      console.error(error);
+    } finally {
+      setSubmitting(false);
     }
-
-    fetchBeerReviews();
-  }, [beerId]);
-
-  console.log("Reviews>", reviews);
-  console.log("Avg Rating>", avgRating);
-  console.log("User Review>", userReview);
+  };
 
   if (loading) return <ActivityIndicator size="large" />;
-  if (error) return <Text>Error loading beer reviews.</Text>;
+  if (error) return <Text>Error loading review beer view.</Text>;
 
   return (
     <View style={styles.container}>
-      <Button
-        title="Back to Beer Details"
-        onPress={() => navigation.goBack()}
-        buttonStyle={styles.backButton}
-      />
+      <Text>Haz una reseña de la cerveza!!!</Text>
 
-      <Text style={styles.beerName}>{beer.name}</Text>
-      <Rating imageSize={20} readonly startingValue={avgRating} />
-      <Text style={styles.avgRating}>Rating: {avgRating.toFixed(2)} ({reviews.length} reviews)</Text>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, isSubmitting, errors, touched, setFieldValue }) => (
+          <>
+            <TextInput
+              style         = {styles.textInput}
+              onChangeText  = {handleChange('text')}
+              onBlur        = {handleBlur('text')}
+              value         = {values.text}
+              placeholder   = "Escribe tu reseña"
+              multiline
+              numberOfLines = {6}
+            />
+            {touched.text && errors.text && <Text style={styles.errorText}>{errors.text}</Text>}
+            
+            <Text>Califica la cerveza:</Text>
+            <Rating
+              name           = "rating"
+              defaultValue   = {1}
+              size           = {30}
+              onRatingChange = {(value) => setFieldValue('rating', value)}
+            />
 
-      {/* Reseña del usuario actual */}
-      {userReview && (
-        <View style={styles.reviewCard}>
-          <Text style={styles.userName}>You (@{userReview.user.handle})</Text>
-          <Rating imageSize={20} readonly startingValue={userReview.rating} />
-          <Text style={styles.reviewText}>{userReview.text}</Text>
-        </View>
-      )}
+            <Button
+              title    = {loading ? 'Enviando...' : 'Enviar Reseña'}
+              onPress  = {handleSubmit}
+              disabled = {isSubmitting || loading}
+            />
 
-      <FlatList
-        data={reviews}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.reviewCard}>
-            <Text style={styles.userName}>@{item.user.handle}</Text>
-            <Rating imageSize={20} readonly startingValue={item.rating} />
-            <Text style={styles.reviewText}>{item.text}</Text>
-          </View>
+            {serverError && <Text style={styles.errorText}>{serverError}</Text>}
+          </>
         )}
-      />
+      </Formik>
     </View>
   );
 };
@@ -141,35 +146,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  beerName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  avgRating: {
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  reviewCard: {
-    padding: 10,
+  textInput: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    padding: 10,
     marginBottom: 10,
   },
-  userName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  reviewText: {
-    marginTop: 5,
-  },
-  backButton: {
-    backgroundColor: '#c0874f',
-    marginBottom: 20,
+  errorText: {
+    color: 'red',
   },
 });
 
 export default ReviewBeer;
-
