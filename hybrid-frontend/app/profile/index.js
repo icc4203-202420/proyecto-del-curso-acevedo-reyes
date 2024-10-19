@@ -1,31 +1,21 @@
 import React from 'react';
-import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function Index() {
+function Profile() {
+  const navigation = useNavigation();
+
+  const handleLogout = () => {
+    navigation.navigate('Home');
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        secureTextEntry={true}
-      />
-
-      <Button
-        title="Login"
-        onPress={() => {
-          // No hace nada, solo un mockup
-        }}
-      />
+    <View>
+      <Text>Profile Screen</Text>
+      <Button title="Logout" onPress={handleLogout} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -54,3 +44,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
+
+export default Profile;

@@ -108,6 +108,8 @@ function LogIn() {
       <Avatar.Icon size={120} icon="lock" style={styles.avatar} />
       <Text style={styles.title}>Iniciar sesión</Text>
 
+      {serverError ? <Text style={styles.errorText}>{serverError}</Text> : null}
+
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

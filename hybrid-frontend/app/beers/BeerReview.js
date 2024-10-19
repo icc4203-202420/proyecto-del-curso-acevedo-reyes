@@ -3,12 +3,15 @@ import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-nativ
 import { Rating, Button } from 'react-native-elements';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NGROK_URL = process.env.NGROK_URL;
 
 const BeerReview = ({ route }) => {
   const { beerId } = route.params;
   const [beer, setBeer] = useState(null);
+  const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -20,28 +23,27 @@ const BeerReview = ({ route }) => {
   console.log("URL NGROK>", NGROK_URL)
   console.log("Beer ID>", beerId)
   
+  //fetchear el usuario (todavia no guardamos el token si jejejej)
+  //useEffect(() => {
+  //const getUser = async () => {
+  async function getUser() {
+    try {
+      const currentUser = await AsyncStorage.getItem('user');
+      setUser(Math.round(currentUser));
+      setUserLoading(false);
+      return Math.round(currentUser);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
+
+    //getUser();
+  //}, []);
+
+  
+
   /*
-  useEffect(() => {
-    axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`)
-      .then(response => {
-        const fetchedBeer = response.data.beer;
-        setBeer(fetchedBeer);
-        setReviews(fetchedBeer.reviews || []);
-        setAvgRating(fetchedBeer.avg_rating || 0);
-
-        const userId = 1; // Simulación del user ID
-        const userReview = fetchedBeer.reviews.find(review => review.user.id === userId);
-        setUserReview(userReview);
-
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-      });
-  }, [beerId]);
-  */
-
   useEffect(() => {
     const fetchBeerReviews = async () => {
       try {
@@ -57,8 +59,8 @@ const BeerReview = ({ route }) => {
         setReviews(fetchedBeer.reviews || []);
         setAvgRating(fetchedBeer.avg_rating || 0);
 
-        const userId = 1; // Simulación del user ID
-        const userReview = fetchedBeer.reviews.find(review => review.user.id === userId);
+        //const userId = 1; // Simulación del user ID
+        const userReview = fetchedBeer.reviews.find(review => review.user.id === user);
         setUserReview(userReview);
 
         setLoading(false);
@@ -71,6 +73,44 @@ const BeerReview = ({ route }) => {
 
     fetchBeerReviews();
   }, [beerId]);
+  */
+
+  useEffect(() => {
+    const fetchBeerReviews = async () => {
+      try {
+        const response = await axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`, {
+          headers: {
+            'ngrok-skip-browser-warning': 'true'
+          }
+        });
+        console.log("Response>", response);
+        
+        const fetchedBeer = response.data.beer;
+        setBeer(fetchedBeer);
+        
+        const currentUser = await getUser(); //esto no me funciona que horrible!!! asyncStorage deberias esr syncstorage!!
+        setUser(currentUser);
+        console.log("User>", user);
+        //if (!userLoading) {
+        
+        const userReview = fetchedBeer.reviews.find(review => review.user.id === user);
+        setUserReview(userReview);
+
+        const otherReviews = fetchedBeer.reviews.filter(review => review.user.id !== user);
+        setReviews(otherReviews || []);
+        
+        setAvgRating(fetchedBeer.avg_rating || 0);
+        setLoading(false);
+        
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
+    }
+  
+    fetchBeerReviews();
+  }, [beerId]);
+  
 
   console.log("Reviews>", reviews);
   console.log("Avg Rating>", avgRating);
@@ -79,6 +119,7 @@ const BeerReview = ({ route }) => {
   if (loading) return <ActivityIndicator size="large" />;
   if (error) return <Text>Error loading beer reviews.</Text>;
 
+  /*
   return (
     <View style={styles.container}>
       <Button
@@ -91,7 +132,7 @@ const BeerReview = ({ route }) => {
       <Rating imageSize={20} readonly startingValue={avgRating} />
       <Text style={styles.avgRating}>Rating: {avgRating.toFixed(2)} ({reviews.length} reviews)</Text>
 
-      {/* Reseña del usuario actual */}
+       Reseña del usuario actual
       {userReview && (
         <View style={styles.reviewCard}>
           <Text style={styles.userName}>You (@{userReview.user.handle})</Text>
@@ -113,6 +154,52 @@ const BeerReview = ({ route }) => {
       />
     </View>
   );
+  */
+
+  return (
+    <View style={styles.container}>
+      <Button
+        title="Back to Beer Details"
+        onPress={() => navigation.goBack()}
+        buttonStyle={styles.backButton}
+      />
+  
+      <Text style={styles.beerName}>{beer.name}</Text>
+      <Rating imageSize={20} readonly startingValue={avgRating} />
+      <Text style={styles.avgRating}>Rating: {avgRating.toFixed(2)} ({reviews.length + (userReview ? 1 : 0)} reviews)</Text>
+  
+      {userLoading ? (
+        <ActivityIndicator />
+      ) : (
+      <>
+        {/* Reseña del usuario actual */}
+        {userReview && (
+          <View style={styles.reviewCard}>
+            <Text style={styles.userName}>Tu (@{userReview.user.handle})</Text>
+            <Rating imageSize={20} readonly startingValue={userReview.rating} />
+            <Text style={styles.reviewText}>{userReview.text}</Text>
+          </View>
+        )}
+    
+        {/* Reseñas de otros usuarios */}
+        <FlatList
+          initialNumToRender={6}
+          data={reviews}
+          keyExtractor={item => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.reviewCard}>
+              <Text style={styles.userName}>@{item.user.handle}</Text>
+              <Rating imageSize={20} readonly startingValue={item.rating} />
+              <Text style={styles.reviewText}>{item.text}</Text>
+            </View>
+          )}
+        />
+      </>
+      
+      )}
+      
+    </View>
+  );  
 };
 
 const styles = StyleSheet.create({

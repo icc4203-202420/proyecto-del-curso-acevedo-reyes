@@ -1,9 +1,25 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { View, TextInput, StyleSheet, Text, Button } from 'react-native';
 import BeersList from '../beers/BeersList';
+import { useNavigation } from '@react-navigation/native';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
+
 
 const Home = () => {
   const [searchKeywords, setSearchKeywords] = useState('');
+  const navigation = useNavigation();
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('user');
+      console.log('User removed from AsyncStorage');
+    } 
+    catch (e) {
+      console.error(e);
+    }
+
+    navigation.navigate('LogIn');
+  };
 
   return (
     <View style={styles.container}>
@@ -21,6 +37,8 @@ const Home = () => {
       ) : (
         <Text>No beers to search for yet.</Text>
       )}
+      <br /><br /><br /><br /><br /><br /><br />
+      <Button title="Logout" onPress={handleLogout} />
     </View>
   );
 };
