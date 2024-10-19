@@ -36,6 +36,17 @@ if Rails.env.development?
 
   chile = Country.create(name: 'Chile')
 
+  admin = User.create!(
+  first_name: "Victor", 
+  last_name: "Gonzalez", 
+  age: 30, 
+  email: "vicho@gmail.com", 
+  password: "skibidi", 
+  password_confirmation: "skibidi", 
+  handle: "vicho123"
+  )
+
+
   address1 = Address.create(
     line1: 'Av. Pdte. Kennedy 9001',
     line2: 'Local 3235',
@@ -138,5 +149,6 @@ if Rails.env.development?
       FactoryBot.create(:review, user: user, beer: beer)
     end
   end
+  puts("WE DID IT BOYS")
 
 end

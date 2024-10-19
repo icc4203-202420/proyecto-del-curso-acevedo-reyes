@@ -11,12 +11,12 @@ import UserInfo from './components/UserInfo';
 import SignUp from './components/SignUp';
 import LogIn from './components/LogIn';
 import EventDetails from './components/EventDetails';
+import UserDetails from './components/UserDetails';
+import EventPictures from './components/EventPictures';
 
 function App() {
   return (
     <>
-      <FixedBottomNav />
-
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/search" element={<SearchTabs />} />
@@ -28,7 +28,12 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/log-in" element={<LogIn />} />
         <Route path="/events/:eventId" element={<EventDetails />} />
+        <Route path="/users/:userId" element={<UserDetails />} />  {/* Nueva ruta para el detalle de un usuario */}
+        <Route path="/events/:eventId/pictures" element={<EventPictures />} />
+
       </Routes>
+
+      <FixedBottomNav />
     </>
   );
 }
