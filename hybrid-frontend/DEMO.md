@@ -54,3 +54,5 @@ npx expo start --tunnel --reset-cache
 De no hacer lo del reset cache, entonces el servidor no actualiza correctamente el valor de NGROK_URL del .env, en los archivos que hagan GET y POST requests.
 
 Lo de --tunnel es para que expo forwardee el puerto automaticamente con ngrok, lo cual permite que se puede visualizar desde el celular. Esto fue necesario mas que nada porque trabajamos con WSL2, por lo que la red privada de esta no permitia que se conectara al celular sin forwardear el puerto..
+
+Finalmente, y en nuestra experiencia, el anterior comando funciona en la segunda iteracion; por alguna razon, la primera vez que se corre, el celular no reconoce el puerto fordwardeado, aunque deberia.. quizas es un tema de que hay que dejar que el servidor descanse un poco antes de correrlo...
