@@ -65,7 +65,7 @@ function LogIn() {
       
       console.log(response);
       //const receivedToken = response.headers['authorization'];
-      const receivedUser = response.data.status.data.user.id;
+      const receivedUser = response.data.status.data.user.id.toString();
 
       if (receivedUser) {
         try {

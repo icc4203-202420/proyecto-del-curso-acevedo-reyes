@@ -37,7 +37,7 @@ const Home = () => {
       ) : (
         <Text>No beers to search for yet.</Text>
       )}
-      <br /><br /><br /><br /><br /><br /><br />
+      
       <Button title="Logout" onPress={handleLogout} />
     </View>
   );

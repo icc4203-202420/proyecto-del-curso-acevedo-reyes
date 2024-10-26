@@ -1,4 +1,4 @@
-# Leer porfavor!! sobre entrega 2.1...
+# Leer porfavor!! Actualizaciones de corrida de entrega 2.2...
 
 Hola Tomás! Aquí unas instrucciones sobre como correr el proyecto híbrido, sin dolores de cabeza!!
 
@@ -30,24 +30,27 @@ NGROK_URL=[la url del forwarding]
 
 ## Correr el servidor front!!
 
-Para instalar las dependencias, solo hay que hacer el siguiente comando en hybrid-frontend:
+Para instalar las dependencias de package.json, solo hay que hacer el siguiente comando en hybrid-frontend:
 
 ```sh
 npm install
 ```
 
-Luego, para correr el servidor front, hay que hacer:
+Luego, para correr el front y abrirlo en el celular, hay que hacer un setup medio chico, pero que probablemente ya hayas hecho:
 
 ```sh
-npm run start -- --reset-cache
+npm install --global eas-cli
+npm install --global expo-cli
+```
+
+(la verdad es que nunca hemos probado a correr el siguiente comando sin dicho setup, asi que no sabemos si depende de eas-cli y expo-cli. De no funcionarte el siguiente comando, haz el setup mencionado... e.o.c entonces pulento !!)
+
+Una vez hecho lo anterior, el front se corre en hybrid-frontend con:
+
+```sh
+npx expo start --tunnel --reset-cache
 ```
 
 De no hacer lo del reset cache, entonces el servidor no actualiza correctamente el valor de NGROK_URL del .env, en los archivos que hagan GET y POST requests.
 
-Lamentablemente, y hasta ahora, el servidor corre solo en la web (estamos trabajando para que sea tambien en el celu!!), por lo que es visible en 
-
-```
-http://localhost:8081/ 
-```
-
-... esperamos que esto no sea un incoveniente para la evaluación..
+Lo de --tunnel es para que expo forwardee el puerto automaticamente con ngrok, lo cual permite que se puede visualizar desde el celular. Esto fue necesario mas que nada porque trabajamos con WSL2, por lo que la red privada de esta no permitia que se conectara al celular sin forwardear el puerto..
