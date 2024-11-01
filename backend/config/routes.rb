@@ -32,6 +32,8 @@ Rails.application.routes.draw do
       get 'beers/:id/bars', to: 'beers#bars'
       get 'users/:id/friendships', to: 'users#friendships'
       get 'events/:id/event_pictures', to: 'event_pictures#event_index'
+      #get 'users/:id/push_tokens', to: 'push_tokens#index'
+      post 'push_tokens', to: 'push_tokens#create'
 
       resources :users do
         resources :reviews, only: [:index]

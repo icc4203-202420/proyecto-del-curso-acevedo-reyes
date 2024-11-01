@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 
 const NGROK_URL = process.env.NGROK_URL;
 
-const BeersList = ({ searchKeywords, isActive }) => {
-  const [beers, setBeers] = useState([]);
+const BarsList = ({ searchKeywords, isActive }) => {
+  const [bars, setBars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation(); // Hook de navegación
@@ -15,15 +15,15 @@ const BeersList = ({ searchKeywords, isActive }) => {
   
   useEffect(() => {
     if (isActive) {
-      const fetchBeers = async () => {
+      const fetchBars = async () => {
         try {
-          const response = await axios.get(`${NGROK_URL}/api/v1/beers`, {
+          const response = await axios.get(`${NGROK_URL}/api/v1/bars`, {
             headers: {
               'ngrok-skip-browser-warning': 'true'
             }
           });
           //console.log("Response>", response);
-          setBeers(response.data.beers || []);
+          setBars(response.data.bars || []);
           setLoading(false);
         } catch (error) {
           setError(error);
@@ -31,33 +31,37 @@ const BeersList = ({ searchKeywords, isActive }) => {
         }
       }
 
-      fetchBeers();
+      fetchBars();
     }
   }, [isActive]);
 
-  console.log("Beers>", beers)
+  console.log("Bars>", bars);
 
-  const filteredBeers = beers.filter(beer =>
-    beer.name.toLowerCase().includes(searchKeywords.toLowerCase())
+  // Filtrar usuarios en base a las palabras claves de búsqueda
+  const filteredBars = bars.filter(bar => 
+    bar.name.toLowerCase().includes(searchKeywords.toLowerCase())
   );
 
+  
   if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error loading beers</Text>;
+  if (error) return <Text>Error loading bars</Text>;
 
   return (
     <View style={styles.container}>
-      {filteredBeers.length === 0 ? (
-        <Text>No beers found.</Text>
+      {filteredBars.length === 0 ? (
+        <Text>No Bars found.</Text>
       ) : (
         <FlatList
-          data={filteredBeers}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
+          data         = {filteredBars}
+          keyExtractor = {(item) => item.id.toString()}
+          renderItem   = {({ item }) => (
             <TouchableOpacity
-              style={styles.beerItem}
-              onPress={() => navigation.navigate('BeerDetail', { beerId: item.id })} // Navegar a BeerDetail
+              style    = {styles.beerItem}
+              onPress={() => navigation.navigate('BarDetails', { barId: item.id })} // Navegar a BarDetails
             >
-              <Text style={styles.beerName}>{item.name}</Text>
+              <Text style={styles.beerName}>
+                {item.name}
+              </Text>
             </TouchableOpacity>
           )}
         />
@@ -82,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BeersList;
+export default BarsList;

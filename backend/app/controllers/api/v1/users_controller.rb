@@ -1,3 +1,5 @@
+require_relative '../../../services/push_notification_service'
+
 class API::V1::UsersController < ApplicationController
   respond_to :json
   before_action :set_user, only: [:update, :friendships, :create_friendship] 
@@ -15,6 +17,7 @@ class API::V1::UsersController < ApplicationController
     puts("USER:",@user.inspect)
     events = Attendance.where(user_id: @user.id)
     bars = []
+
     if events.nil?
       bars << "No events assistance was found for this user."
     else
@@ -22,6 +25,7 @@ class API::V1::UsersController < ApplicationController
       events.each do |attendance|
       puts("DEBUGGING FOR", attendance.event_id)
       barname = Bar.find_by(id: attendance.event_id)
+      
       if barname.nil?
         puts("NOT FOUND ANY BAR")
       else
@@ -29,13 +33,12 @@ class API::V1::UsersController < ApplicationController
         bars << barname.name
       
       end
-     
     end
   end
     puts("VARIABLE BARS:", bars)
     if @user
       render json: { 
-        user: @user.as_json(only: [:id, :first_name, :last_name, :email, :handle]).merge(bars: bars)
+        user: @user.as_json(only: [:id, :first_name, :last_name, :email, :handle]).merge(bars: bars, push_tokens: @user.push_tokens)
       }, status: :ok
     else
       render json: { error: 'User not found' }, status: :not_found
@@ -55,15 +58,18 @@ class API::V1::UsersController < ApplicationController
     puts("LLAMANDO A USER CONTROLER?!")
     @user = User.find(params[:id])
     @friend = User.find(params[:friend_id])
-    @bar = Bar.find_by(name: params[:bar_id])
+    @bar = Bar.find_by(params[:bar_id])
     @friendship = Friendship.find_by(user: @user, friend: @friend)
     puts("SEARCHED FOR FRIENDSHIP, result: ", @friendship)
+    
     if @friendship.nil?
       puts("BAR FOUND!", @bar.inspect)
-      @friendship = Friendship.new(user: @user, friend: @friend, bar: @bar)
-      
-      if @friendship.save
+      @friendship1 = Friendship.new(user: @user, friend: @friend, bar: @bar)
+      @friendship2 = Friendship.new(user: @friend, friend: @user, bar: @bar)
+      if @friendship1.save && @friendship2.save
         render json: { message: 'Friendship created successfully.' }, status: :ok
+        PushNotificationService.notify_user_about_friendship(@user, @friend)
+        #PushNotificationService.notify_user_about_friendship(@friend, @user)
       else
         render json: @friendship.errors, status: :unprocessable_entity
       end

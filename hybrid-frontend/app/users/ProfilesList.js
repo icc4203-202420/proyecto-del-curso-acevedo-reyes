@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 
 const NGROK_URL = process.env.NGROK_URL;
 
-const BeersList = ({ searchKeywords, isActive }) => {
-  const [beers, setBeers] = useState([]);
+const ProfilesList = ({ searchKeywords, isActive }) => {
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation(); // Hook de navegación
@@ -15,15 +15,15 @@ const BeersList = ({ searchKeywords, isActive }) => {
   
   useEffect(() => {
     if (isActive) {
-      const fetchBeers = async () => {
+      const fetchUsers = async () => {
         try {
-          const response = await axios.get(`${NGROK_URL}/api/v1/beers`, {
+          const response = await axios.get(`${NGROK_URL}/api/v1/users`, {
             headers: {
               'ngrok-skip-browser-warning': 'true'
             }
           });
           //console.log("Response>", response);
-          setBeers(response.data.beers || []);
+          setUsers(response.data.users || []);
           setLoading(false);
         } catch (error) {
           setError(error);
@@ -31,33 +31,37 @@ const BeersList = ({ searchKeywords, isActive }) => {
         }
       }
 
-      fetchBeers();
+      fetchUsers();
     }
   }, [isActive]);
 
-  console.log("Beers>", beers)
+  console.log("Users>", users);
 
-  const filteredBeers = beers.filter(beer =>
-    beer.name.toLowerCase().includes(searchKeywords.toLowerCase())
+  // Filtrar usuarios en base a las palabras claves de búsqueda
+  const filteredUsers = users.filter(user => 
+    user.handle.toLowerCase().includes(searchKeywords.toLowerCase())
   );
 
+  
   if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error loading beers</Text>;
+  if (error) return <Text>Error loading users</Text>;
 
   return (
     <View style={styles.container}>
-      {filteredBeers.length === 0 ? (
-        <Text>No beers found.</Text>
+      {filteredUsers.length === 0 ? (
+        <Text>No Users found.</Text>
       ) : (
         <FlatList
-          data={filteredBeers}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
+          data         = {filteredUsers}
+          keyExtractor = {(item) => item.id.toString()}
+          renderItem   = {({ item }) => (
             <TouchableOpacity
-              style={styles.beerItem}
-              onPress={() => navigation.navigate('BeerDetail', { beerId: item.id })} // Navegar a BeerDetail
+              style    = {styles.beerItem}
+              onPress={() => navigation.navigate('ProfileDetails', { userId: item.id })} // Navegar a ProfileDetail
             >
-              <Text style={styles.beerName}>{item.name}</Text>
+              <Text style={styles.beerName}>
+                {item.handle}
+              </Text>
             </TouchableOpacity>
           )}
         />
@@ -82,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BeersList;
+export default ProfilesList;

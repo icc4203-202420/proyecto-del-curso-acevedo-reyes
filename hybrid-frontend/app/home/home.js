@@ -1,19 +1,49 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, StyleSheet, Text, Button } from 'react-native';
-import BeersList from '../beers/BeersList';
+//import BeersList from '../beers/BeersList';
+import SearchTabs from '../../components/SearchTabs';
 import { useNavigation } from '@react-navigation/native';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
+// falta hacer que en logout se elimine el push token actual... horribble..
 
 const Home = () => {
   const [searchKeywords, setSearchKeywords] = useState('');
   const navigation = useNavigation();
 
-  const handleLogout = async () => {
+  const [showSearchTabs, setShowSearchTabs] = useState(false);
+  const inputRef = React.createRef(null);
+
+  const handleTextChange = (text) => {
+    setSearchKeywords(text);
+    if (text.length > 0) {
+      setShowSearchTabs(true);
+    } else {
+      setShowSearchTabs(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showSearchTabs && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showSearchTabs]);
+
+  async function handleLogout() {
     try {
+      //await AsyncStorage.getItem('user');
+      //console.log('User retrieved from AsyncStorage');
       await AsyncStorage.removeItem('user');
       console.log('User removed from AsyncStorage');
     } 
+    catch (e) {
+      console.error(e);
+    }
+    try {
+      await SecureStore.deleteItemAsync('token');
+      console.log('Token removed from SecureStore');
+    }
     catch (e) {
       console.error(e);
     }
@@ -25,17 +55,17 @@ const Home = () => {
     <View style={styles.container}>
       {/* Barra de búsqueda */}
       <TextInput
+        ref={inputRef}
         style={styles.searchBar}
-        placeholder="Search for beers..."
+        placeholder="Busca por nombre!"
         value={searchKeywords}
-        onChangeText={setSearchKeywords} // Cada vez que cambie el texto, actualiza el estado
+        onChangeText={handleTextChange}
       />
 
-      {/* Renderiza BeersList y pasa searchKeywords para filtrar en tiempo real */}
-      {searchKeywords ? (
-        <BeersList searchKeywords={searchKeywords} />
+      {showSearchTabs ? (
+        <SearchTabs searchKeywords={searchKeywords} />
       ) : (
-        <Text>No beers to search for yet.</Text>
+        <Text>No has ingresado texto todavía.</Text>
       )}
       
       <Button title="Logout" onPress={handleLogout} />

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import { Avatar } from 'react-native-paper'; // Asegúrate de instalar react-native-paper
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -7,6 +7,18 @@ import { useNavigation } from '@react-navigation/native'; // Importa el hook de 
 import axios from 'axios';
 import useAxios from 'axios-hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
+import { registerForPushNotificationsAsync } from '../../utils/Notifications';
+
+
+async function getValueFor(key) {
+  let result = await SecureStore.getItemAsync(key);
+  if (result) {
+    console.log('SecureStore result for key', key, ':', result);
+  } else {
+    console.log('No values stored under key:', key);
+  }
+}
 
 const NGROK_URL = process.env.NGROK_URL;
 
@@ -64,7 +76,7 @@ function LogIn() {
       });
       
       console.log(response);
-      //const receivedToken = response.headers['authorization'];
+      const receivedToken = response.headers['authorization'];
       const receivedUser = response.data.status.data.user.id.toString();
 
       if (receivedUser) {
@@ -77,18 +89,37 @@ function LogIn() {
         }
       }
 
-      //if (receivedToken) {
-      //  localStorage.setItem('token', receivedToken);
-      //  console.log('token recibido!', receivedToken);
-      //  setLoginSuccess(true);
+      if (receivedToken) {
+        try {
+          await SecureStore.setItemAsync('token', receivedToken);
+          console.log('token recibido!', receivedToken);
+          setLoginSuccess(true);
 
-      setTimeout(() => {
-        navigation.navigate('Home');
-      }, 1000); // Redirige a "/" después de 1 segundo
-      //}
-      //else {
-      //  console.log('ermmm what the figma?');
-      //}
+          // Register for push notifications
+          /*
+          const pushToken = await registerForPushNotificationsAsync();
+          console.log('Push token!!!>', pushToken);
+
+          // Save push token
+          const response = await axios.post(`${NGROK_URL}/api/v1/push_tokens`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
+            },
+            user_id: parseInt(receivedUser),
+            token: pushToken,
+          });
+          console.log('Push token saved!!!>', response);
+          */
+
+          setTimeout(() => {
+            navigation.navigate('Home');
+          }, 1000); // Redirige a "/" después de 1 segundo
+        }
+        catch (error) {
+          console.error("Error en el guardado del token:", error);
+        }
+      }
     }
     catch (error) {
       if (error.response && error.response.status === 401) {
@@ -102,6 +133,14 @@ function LogIn() {
       setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    getValueFor('token');
+    //getValueFor('user'); // user no esta guardado en asyncstorage asi q xd
+  }, []);
+
+  if (loading) return <ActivityIndicator size="large" />;
+  if (error) return <Text>Error xdlol!</Text>;
 
   return (
     <View style={styles.container}>

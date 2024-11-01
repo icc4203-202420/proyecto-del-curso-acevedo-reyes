@@ -29,6 +29,9 @@ class User < ApplicationRecord
   has_many :inverse_friendships, class_name: 'Friendship', foreign_key: 'friend_id'
   has_many :inverse_friends, through: :inverse_friendships, source: :user  
 
+  # nuevo!! para los pushtokens!!
+  has_many :push_tokens, class_name: 'PushToken', dependent: :destroy
+
   def generate_jwt
     Warden::JWTAuth::UserEncoder.new.call(self, :user, nil)[0]
   end

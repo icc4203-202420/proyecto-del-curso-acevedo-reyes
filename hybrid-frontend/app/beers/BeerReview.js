@@ -41,9 +41,6 @@ const BeerReview = ({ route }) => {
     //getUser();
   //}, []);
 
-  
-
-  /*
   useEffect(() => {
     const fetchBeerReviews = async () => {
       try {
@@ -52,38 +49,7 @@ const BeerReview = ({ route }) => {
             'ngrok-skip-browser-warning': 'true'
           }
         });
-        console.log("Response>", response);
-        
-        const fetchedBeer = response.data.beer;
-        setBeer(fetchedBeer);
-        setReviews(fetchedBeer.reviews || []);
-        setAvgRating(fetchedBeer.avg_rating || 0);
-
-        //const userId = 1; // Simulación del user ID
-        const userReview = fetchedBeer.reviews.find(review => review.user.id === user);
-        setUserReview(userReview);
-
-        setLoading(false);
-        
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    }
-
-    fetchBeerReviews();
-  }, [beerId]);
-  */
-
-  useEffect(() => {
-    const fetchBeerReviews = async () => {
-      try {
-        const response = await axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`, {
-          headers: {
-            'ngrok-skip-browser-warning': 'true'
-          }
-        });
-        console.log("Response>", response);
+        //console.log("Response>", response);
         
         const fetchedBeer = response.data.beer;
         setBeer(fetchedBeer);

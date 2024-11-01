@@ -1,10 +1,10 @@
 class API::V1::FriendshipsController < ApplicationController
-    before_action :authenticate_user!  # Asumiendo que estás usando Devise para la autenticación
+    before_action :authenticate_user! 
   
     def create
       puts("LLAMANDO A FRIENDSHIP CONTROLER?!")
       # Obtener el usuario activo y el usuario de la vista
-      @user = current_user  # Devise te permite acceder al usuario actual con current_user
+      @user = current_user 
       @friend = User.find(params[:friend_id])
       @bar = Bar.find(params[:bar_id])  # Bar donde se conocieron (desde el autocomplete)
   

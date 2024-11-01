@@ -14,23 +14,7 @@ const BeerDetail = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-
   console.log("URL NGROK>", NGROK_URL)
-
-  /*
-  useEffect(() => {
-    // Cargar detalles de la cerveza desde la API
-    axios.get(`${NGROK_URL}/api/v1/beers/${beerId}`)
-      .then(response => {
-        setBeer(response.data.beer);
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error);
-        setLoading(false);
-      });
-  }, [beerId]);
-  */
 
   useEffect(() => {
     const fetchBeer = async () => {
@@ -40,7 +24,7 @@ const BeerDetail = ({ route }) => {
             'ngrok-skip-browser-warning': 'true'
           }
         });
-        console.log("Response>", response);
+        //console.log("Response>", response);
         setBeer(response.data.beer || []);
         setLoading(false);
       } catch (error) {
@@ -56,7 +40,7 @@ const BeerDetail = ({ route }) => {
             'ngrok-skip-browser-warning': 'true'
           }
         });
-        console.log("Response>", response);
+        //console.log("Response>", response);
         setBars(response.data.bars || []);
         setLoading(false);
       } catch (error) {

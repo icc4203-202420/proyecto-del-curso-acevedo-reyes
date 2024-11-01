@@ -30,22 +30,21 @@ NGROK_URL=[la url del forwarding]
 
 ## Correr el servidor front!!
 
-Para instalar las dependencias de package.json, solo hay que hacer el siguiente comando en hybrid-frontend:
-
-```sh
-npm install
-```
-
-Luego, para correr el front y abrirlo en el celular, hay que hacer un setup medio chico, pero que probablemente ya hayas hecho:
+Hay que hacer un setup medio chico, pero que probablemente ya hayas hecho; hay que instalar expo-cli y eas-cli globalmente!!:
 
 ```sh
 npm install --global eas-cli
 npm install --global expo-cli
 ```
 
-(la verdad es que nunca hemos probado a correr el siguiente comando sin dicho setup, asi que no sabemos si depende de eas-cli y expo-cli. De no funcionarte el siguiente comando, haz el setup mencionado... e.o.c entonces pulento !!)
+Luego, para instalar las dependencias de package.json, solo hay que hacer el siguiente comando en hybrid-frontend:
 
-Una vez hecho lo anterior, el front se corre en hybrid-frontend con:
+```sh
+npx expo install
+```
+
+Luego, para correr el front y abrirlo en el celular
+(la verdad es que nunca hemos probado a correr el siguiente comando sin dicho setup, asi que no sabemos si depende de eas-cli y expo-cli. De no funcionarte el siguiente comando, haz el setup mencionado... e.o.c entonces pulento !!), en hybrid-frontend se hace:
 
 ```sh
 npx expo start --tunnel --reset-cache

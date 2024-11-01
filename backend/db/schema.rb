@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_08_09_155040) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_01_041311) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -164,6 +164,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_09_155040) do
     t.check_constraint "user_id != friend_id"
   end
 
+  create_table "push_tokens", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.string "token", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_push_tokens_on_user_id"
+  end
+
   create_table "review_counters", force: :cascade do |t|
     t.integer "count"
     t.datetime "created_at", null: false
@@ -217,6 +225,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_08_09_155040) do
   add_foreign_key "friendships", "bars"
   add_foreign_key "friendships", "users"
   add_foreign_key "friendships", "users", column: "friend_id"
+  add_foreign_key "push_tokens", "users"
   add_foreign_key "reviews", "beers", on_delete: :cascade
   add_foreign_key "reviews", "users"
 end
