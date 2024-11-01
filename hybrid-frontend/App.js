@@ -89,6 +89,7 @@ import BeerReview from './app/beers/BeerReview';
 import ReviewBeer from './app/beers/ReviewBeer';
 import ProfileDetails from './app/users/ProfileDetails';
 import BarDetails from './app/bars/BarDetails';
+import EventDetails from './app/events/EventDetails';
 
 //import * as Notifications from 'expo-notifications';
 
@@ -107,8 +108,8 @@ const App = () => {
   }, []);
 
 
-  // TENTATIVAMENTE ESTO VA EN PROFILEDETAILS.JS PERO NO TENGO MANERA DE PROBARLO HASTA QUE 
-  // ME PASES EL PROJECTID ASI Q XDLOL
+  // TENTATIVAMENTE ESTO VA EN PROFILEDETAILS.JS Y OTROS PERO NO TENGO MANERA DE PROBARLO HASTA QUE 
+  // ME PASES EL PROJECT-ID ASI Q XDLOL
 
   // ES LA CONFIGURACIÓN DE ENVIO DE NOTIFICACIONES
   /*
@@ -156,6 +157,7 @@ const App = () => {
             <Stack.Screen name="SignUp" component={SignUp} />
             <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
             <Stack.Screen name="BarDetails" component={BarDetails} />
+            <Stack.Screen name="EventDetails" component={EventDetails} />
           </Stack.Navigator>
         </View> 
       </NavigationContainer>

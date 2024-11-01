@@ -75,7 +75,7 @@ function LogIn() {
         }
       });
       
-      console.log(response);
+      //console.log(response);
       const receivedToken = response.headers['authorization'];
       const receivedUser = response.data.status.data.user.id.toString();
 
