@@ -30,11 +30,11 @@ NGROK_URL=[la url del forwarding]
 
 ## Correr el servidor front!!
 
-Hay que hacer un setup medio chico, pero que probablemente ya hayas hecho; hay que instalar expo-cli y eas-cli globalmente!!:
+Hay que hacer un setup medio chico, pero que probablemente ya hayas hecho; hay que instalar @expo/cli y eas-cli globalmente!!:
 
 ```sh
+npm install --global @expo/cli
 npm install --global eas-cli
-npm install --global expo-cli
 ```
 
 Luego, para instalar las dependencias de package.json, solo hay que hacer el siguiente comando en hybrid-frontend:

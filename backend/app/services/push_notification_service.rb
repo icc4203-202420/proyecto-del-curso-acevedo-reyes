@@ -1,4 +1,7 @@
-# app/services/push_notification_service.rb
+require 'net/http'
+require 'uri'
+require 'json'
+
 class PushNotificationService
   
   def self.send_notification(to:, title:, body:, data:)
@@ -27,23 +30,75 @@ class PushNotificationService
     end
   end
 
-  # simplemente no hay manera de que pueda obtener el token de un usuario que no soy yo mismo
-  #def self.send_friend_request_notification(requestor_token:, recipient_token:)
   def self.notify_user_about_friendship(user, new_friend)
     title = 'Nueva solicitud de amistad'
     body = '¡Has sido agregado como amigo!'
     data = { screen: 'Home' }  # Esto llevará al usuario a la vista de inicio al abrir la app.
+    
+    # sabemos que solo se debe enviar al new_friend, pero ponemos para el emisor para que quede demostrado que funcionan las notis!!
+    user.push_tokens.each do |push_token_object|
 
-    # Enviar la notificación al solicitante y al destinatario
-    #[requestor_token, recipient_token].each do |token|
-    user.push_tokens.each do |token|
+      next if push_token_object.token.blank?  # Ignora tokens vacíos o nulos
+      
+      puts "Enviando notificación a token: #{push_token_object.token}"
+      
       send_notification(
-        to: token, 
+        to: push_token_object.token, 
         title: title, 
         body: body, 
         data: data
       )
     end
+
+    new_friend.push_tokens.each do |push_token_object|
+
+      next if push_token_object.token.blank?  # Ignora tokens vacíos o nulos
+      
+      puts "Enviando notificación a token: #{push_token_object.token}"
+      
+      send_notification(
+        to: push_token_object.token, 
+        title: title, 
+        body: body, 
+        data: data
+      )
+    end
+  end
+
+  def self.notify_friends_about_check_in(user, event)
+    title = 'Nuevo check-in de amigo'
+    body = "#{user.handle} ha hecho check-in en #{event.name}"
+    data = { screen: 'EventDetail', event_id: event.id }  # Esto llevará al usuario a la vista de detalles del evento al abrir la app.
+
+    user.friends.each do |friend|
+      friend.push_tokens.each do |push_token_object|
+        next if push_token_object.token.blank?  # Ignora tokens vacíos o nulos
+
+        puts "Enviando notificación a token: #{push_token_object.token}"
+
+        send_notification(
+          to: push_token_object.token,
+          title: title,
+          body: body,
+          data: data
+        )
+      end
+    end
+
+    #para ver si notificacion funciona xd
+    user.push_tokens.each do |push_token_object|
+      next if push_token_object.token.blank?  # Ignora tokens vacíos o nulos
+
+      puts "Enviando notificación a token: #{push_token_object.token}"
+
+      send_notification(
+        to: push_token_object.token,
+        title: title,
+        body: body,
+        data: data
+      )
+    end
+
   end
 
 end

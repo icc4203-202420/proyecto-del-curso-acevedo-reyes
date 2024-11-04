@@ -34,6 +34,12 @@
     "plugins": [
       "expo-router",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d02b112c-6af5-4289-afe9-9592931de821"
+      }
+    },
+    "owner": "lucasfreyess"
   }
 }

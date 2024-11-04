@@ -1,4 +1,4 @@
-require_relative '../../../services/push_notification_service'
+require_relative Rails.root.join('app/services/push_notification_service').to_s
 
 class API::V1::UsersController < ApplicationController
   respond_to :json
@@ -68,6 +68,8 @@ class API::V1::UsersController < ApplicationController
       @friendship2 = Friendship.new(user: @friend, friend: @user, bar: @bar)
       if @friendship1.save && @friendship2.save
         render json: { message: 'Friendship created successfully.' }, status: :ok
+        puts "LLAMANDO A PUSH NOTIFICATION SERVICE!!!!!!!!!"
+        
         PushNotificationService.notify_user_about_friendship(@user, @friend)
         #PushNotificationService.notify_user_about_friendship(@friend, @user)
       else

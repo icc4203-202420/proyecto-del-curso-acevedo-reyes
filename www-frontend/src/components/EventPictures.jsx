@@ -52,12 +52,7 @@ function EventPictures() {
 
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [description, setDescription] = useState('');
-
-  const handleTagChange = (event, newValue) => {
-    setSelectedUsers(newValue);
-  };
-
+  
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen(true);

@@ -36,8 +36,7 @@ async function registerForPushNotificationsAsync() {
     return;
   }
 
-  // hay q poner el projectId en el app.json pero yo no lo cree asi q quede estancado..
-  const projectId = Constants.expoConfig?.extra?.eas?.projectId || 'YOUR_PROJECT_ID';
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId || 'd02b112c-6af5-4289-afe9-9592931de821';
   const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
  
   //console.log(token);
@@ -47,5 +46,5 @@ async function registerForPushNotificationsAsync() {
 
 
 module.exports = {
-    registerForPushNotificationsAsync
+  registerForPushNotificationsAsync
 }

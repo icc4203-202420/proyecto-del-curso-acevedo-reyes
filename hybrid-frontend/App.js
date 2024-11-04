@@ -73,13 +73,12 @@ const styles = StyleSheet.create({
 export default App;
 */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaView, View, StyleSheet } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-//import FixedBottomNav from './components/FixedBottomNav';
 import LogIn from './app/auth/logindex';
 import SignUp from './app/auth/regindex';
 import Home from './app/home/home';
@@ -91,12 +90,13 @@ import ProfileDetails from './app/users/ProfileDetails';
 import BarDetails from './app/bars/BarDetails';
 import EventDetails from './app/events/EventDetails';
 
-//import * as Notifications from 'expo-notifications';
+import * as Notifications from 'expo-notifications';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigationRef = useRef(); // Agrega una referencia para la navegación
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -107,14 +107,7 @@ const App = () => {
     checkAuthentication();
   }, []);
 
-
-  // TENTATIVAMENTE ESTO VA EN PROFILEDETAILS.JS Y OTROS PERO NO TENGO MANERA DE PROBARLO HASTA QUE 
-  // ME PASES EL PROJECT-ID ASI Q XDLOL
-
-  // ES LA CONFIGURACIÓN DE ENVIO DE NOTIFICACIONES
-  /*
   useEffect(() => {
-    
     // Configuración para manejar la recepción de la notificación
     const receivedListener = Notifications.addNotificationReceivedListener(
       async (notification) => {
@@ -128,8 +121,8 @@ const App = () => {
     // Configuración para manejar cuando el usuario interactúa con la notificación
     const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
       const { screen } = response.notification.request.content.data;
-      if (screen === 'Home') {
-        navigation.navigate('Home'); // Redirige a Home al presionar la notificación
+      if (screen === 'Home' && navigationRef.current) {
+        navigationRef.current.navigate('Home'); // Usar la referencia de navegación para redirigir
       }
     });
 
@@ -139,11 +132,10 @@ const App = () => {
       Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
-  */
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <View style={styles.container}>
           <Stack.Navigator 
             initialRouteName={isLoggedIn ? "Home" : "LogIn"}  

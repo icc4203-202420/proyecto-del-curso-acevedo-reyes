@@ -1,3 +1,5 @@
+require_relative Rails.root.join('app/services/push_notification_service').to_s
+
 class API::V1::AttendancesController < ApplicationController
   include Authenticable
 
@@ -15,6 +17,9 @@ class API::V1::AttendancesController < ApplicationController
     @attendance = Attendance.new(attendance_params)
     if @attendance.save
       render json: { attendance: @attendance, message: 'Attendance created successfully.' }, status: :ok
+
+      PushNotificationService.notify_friends_about_check_in(@attendance.user, @attendance.event)
+
     else
       render json: @attendance.errors, status: :unprocessable_entity
     end

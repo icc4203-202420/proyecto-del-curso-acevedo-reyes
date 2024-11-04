@@ -96,7 +96,6 @@ function LogIn() {
           setLoginSuccess(true);
 
           // Register for push notifications
-          /*
           const pushToken = await registerForPushNotificationsAsync();
           console.log('Push token!!!>', pushToken);
 
@@ -104,13 +103,14 @@ function LogIn() {
           const response = await axios.post(`${NGROK_URL}/api/v1/push_tokens`, {
             headers: {
               'Content-Type': 'application/json',
-              'ngrok-skip-browser-warning': 'true'
+              'ngrok-skip-browser-warning': 'true',
+              'Authorization': receivedToken,
             },
             user_id: parseInt(receivedUser),
             token: pushToken,
           });
-          console.log('Push token saved!!!>', response);
-          */
+          console.log('Push token saved!!!>!');
+          
 
           setTimeout(() => {
             navigation.navigate('Home');
