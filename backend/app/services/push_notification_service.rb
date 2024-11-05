@@ -101,4 +101,34 @@ class PushNotificationService
 
   end
 
+  def self.notify_users_about_mention(description, event)
+    title = 'Has sido mencionado en una foto'
+    body = "Has sido mencionado en una foto de #{event.name}"
+    data = { screen: 'EventPictures', event_id: event.id }  # Esto llevará al usuario a la vista de fotos del evento al abrir la app.
+  
+    #handles = description.scan(/@\{([^}]+)\}/).flatten
+    handles = description.scan(/@(\w+(\.\w+)?)/).flatten
+
+    puts "HANDLES: #{handles}"
+  
+    handles.each do |handle|
+      puts "BUSCADO USUARIO CON HANDLE!!!: #{handle}"
+      user = User.find_by(handle: handle)
+      next unless user
+  
+      user.push_tokens.each do |push_token_object|
+        next if push_token_object.token.blank?  # Ignora tokens vacíos o nulos
+    
+        puts "Enviando notificación a token: #{push_token_object.token}"
+    
+        send_notification(
+          to: push_token_object.token,
+          title: title,
+          body: body,
+          data: data
+        )
+      end
+    end
+  end
+  
 end

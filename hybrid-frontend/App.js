@@ -89,6 +89,7 @@ import ReviewBeer from './app/beers/ReviewBeer';
 import ProfileDetails from './app/users/ProfileDetails';
 import BarDetails from './app/bars/BarDetails';
 import EventDetails from './app/events/EventDetails';
+import EventPictures from './app/events/EventPictures';
 
 import * as Notifications from 'expo-notifications';
 
@@ -102,7 +103,13 @@ const App = () => {
     const checkAuthentication = async () => {
       const token = await SecureStore.getItemAsync('token');
       console.log('DESDE APP.js:token', token);
-      setIsLoggedIn(!!token); // true si el token existe, false si es nulo
+      //setIsLoggedIn(!!token); // true si el token existe, false si es nulo
+      if (token) {
+        setIsLoggedIn(true);
+      }
+      else {
+        setIsLoggedIn(false);
+      }
     };
     checkAuthentication();
   }, []);
@@ -124,6 +131,15 @@ const App = () => {
       if (screen === 'Home' && navigationRef.current) {
         navigationRef.current.navigate('Home'); // Usar la referencia de navegación para redirigir
       }
+      if (screen === 'EventDetails' && navigationRef.current) {
+        const { event_id } = response.notification.request.content.data;
+        navigationRef.current.navigate('EventDetails', { eventId: event_id });
+      }
+      if (screen === 'EventPictures' && navigationRef.current) {
+        const { event_id } = response.notification.request.content.data;
+        navigationRef.current.navigate('EventPictures', { eventId: event_id });
+      }
+
     });
 
     // Limpieza de listeners al desmontar
@@ -150,6 +166,7 @@ const App = () => {
             <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
             <Stack.Screen name="BarDetails" component={BarDetails} />
             <Stack.Screen name="EventDetails" component={EventDetails} />
+            <Stack.Screen name="EventPictures" component={EventPictures} />
           </Stack.Navigator>
         </View> 
       </NavigationContainer>

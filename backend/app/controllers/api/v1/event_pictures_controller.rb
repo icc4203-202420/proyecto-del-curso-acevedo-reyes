@@ -1,3 +1,5 @@
+require_relative Rails.root.join('app/services/push_notification_service').to_s
+
 class API::V1::EventPicturesController < ApplicationController
   include ImageProcessing
   include Authenticable
@@ -32,6 +34,10 @@ class API::V1::EventPicturesController < ApplicationController
     
     if handle_image_attachment && @event_picture.save
       render json: { event_picture: @event_picture, message: 'Imagen subida correctamente.' }, status: :ok
+      
+      puts "LLAMANDO A PUSH NOTIFICATION SERVICE!!!!!!!!!!"
+      PushNotificationService.notify_users_about_mention(@event_picture.description, @event_picture.event)
+
     else
       render json: @event_picture.errors, status: :unprocessable_entity
     end
