@@ -97,6 +97,8 @@ Review.create!(text: "hola! - user: 1", rating: 4.1, user_id: 1, beer_id: 10)
 
 Deberia aparecer literalmente al instante en la aplicacion! de no ser asi contactarme .... 
 
+Tambien es importante notar que user_id del Review.create! debe ser de un user que tenga de amigo al usuario actual, no necesariamente de manera inversa.. aunque la manera en que tenemos hecha la creacion de amistades en el frontend hace que cuando se agrega a un user como amigo, se crean dos instancias de friendship con el user_id y friend_id alternados, por lo que ambos terminan siendo amigos por ambas partes.
+
 ## preocupaciones...
 
 Debido a que testee de la anterior manera, no esta hecho lo de que sea autenticado tanto crear una review como crear un websocket con el FeedChannel, lo cual es el ultimo requisito ... vale poco asi q igual no me preocupa mucho.
