@@ -65,6 +65,13 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+  config.action_cable.url = "ws://localhost:3001/cable"
+  #config.action_cable.url = "wss://7c5f-190-215-232-198.ngrok-free.app/cable"
+  config.action_cable.allowed_request_origins = [
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    /https:\/\/.*\.ngrok-free\.app/
+  ]
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true

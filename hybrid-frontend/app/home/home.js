@@ -5,6 +5,7 @@ import SearchTabs from '../../components/SearchTabs';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import Feed from '../../components/Feed';
 
 // falta hacer que en logout se elimine el push token actual... horribble..
 
@@ -65,10 +66,12 @@ const Home = () => {
       {showSearchTabs ? (
         <SearchTabs searchKeywords={searchKeywords} />
       ) : (
-        <Text>No has ingresado texto todavía.</Text>
+        <>
+          <Button title="Logout" onPress={handleLogout} />
+          <Feed />
+        </>
       )}
       
-      <Button title="Logout" onPress={handleLogout} />
     </View>
   );
 };

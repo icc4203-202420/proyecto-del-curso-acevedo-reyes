@@ -99,6 +99,15 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigationRef = useRef(); // Agrega una referencia para la navegación
 
+  // Mock para ActionCable en React Native
+  if (typeof global.addEventListener !== "function") {
+    global.addEventListener = () => {};
+  }
+
+  if (typeof global.removeEventListener !== "function") {
+    global.removeEventListener = () => {};
+  }
+
   useEffect(() => {
     const checkAuthentication = async () => {
       const token = await SecureStore.getItemAsync('token');
