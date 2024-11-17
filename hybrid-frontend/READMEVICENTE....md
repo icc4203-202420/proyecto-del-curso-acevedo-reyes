@@ -1,6 +1,6 @@
 # ola papu!
 
-pasos y dependencias para correr la wea mas q nada....
+pasos y dependencias para correr la wea mas q nada.... (btw el .env sigue siendo la pura linea del ngrok_url)
 
 ## Marco Teorico mas o menos rapido
 
