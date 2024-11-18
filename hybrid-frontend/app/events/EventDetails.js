@@ -105,17 +105,21 @@ function EventDetails() {
   // obtener amigos!!
   useEffect(() => {
     const fetchFriends = async () => {
+      console.log("Fetch Friends called")
       try {
+        console.log("Try subsection of fetch friends")
         const response = await axios.get(`${NGROK_URL}/api/v1/users/${currentUser}/friendships`, {
           headers: {
             'ngrok-skip-browser-warning': 'true'
           }
         });
+        console.log("Response?")
         console.log('Amigos:', response.data.friends);
         setFriends(response.data.friends || []);
         setGetLoading(false);
       }
       catch (error) {
+        console.log("Couldn't load friends")
         setGetError(error);
         setGetLoading(false);
       };

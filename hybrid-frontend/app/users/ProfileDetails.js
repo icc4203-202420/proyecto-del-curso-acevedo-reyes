@@ -21,13 +21,15 @@ function ProfileDetails({ route }) {
   const [error, setError] = useState(null);
   const [selectedBar, setSelectedBar] = useState(null);
 
-  console.log("URL NGROK>", NGROK_URL)
-  console.log("User ID del perfil>", userId)
+  
+  
 
   // se obtiene el usuario actual desde AsyncStorage
   async function getCurrentUser() {
     try {
       const currentUser = await AsyncStorage.getItem('user');
+      console.log("URL NGROK>", NGROK_URL)
+      console.log("User ID del perfil>", userId)
       console.log("Current User>", Math.round(currentUser));
       setCurrentUser(Math.round(currentUser));
       setUserLoading(false);
@@ -97,7 +99,12 @@ function ProfileDetails({ route }) {
 
   const handleAddFriend = () => {
     if (selectedBar) {
-      axios.post(`${NGROK_URL}/api/v1/users/:id/friendships`, {
+      console.log("Trying to add friend using following URL");
+      console.log(`${NGROK_URL}/api/v1/users/${currentUser}/friendships`);
+      console.log("Old URL:")
+      console.log(`${NGROK_URL}/api/v1/users/:id/friendships`);
+      
+      axios.post(`${NGROK_URL}/api/v1/users/${currentUser}/friendships`, {
         headers: {
           'Content-Type': 'application/json',
           'ngrok-skip-browser-warning': 'true'

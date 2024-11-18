@@ -9,7 +9,14 @@ import useAxios from 'axios-hooks';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { registerForPushNotificationsAsync } from '../../utils/Notifications';
+import * as Notifications from 'expo-notifications';
 
+
+
+(async () => {
+  const isAvailable = await SecureStore.isAvailableAsync();
+  console.log('SecureStore disponible:', isAvailable);
+})();
 
 async function getValueFor(key) {
   let result = await SecureStore.getItemAsync(key);
@@ -75,7 +82,8 @@ function LogIn() {
         }
       });
       
-      //console.log(response);
+      console.log("Repsuesta de backend:")
+      console.log(response);
       const receivedToken = response.headers['authorization'];
       const receivedUser = response.data.status.data.user.id.toString();
 
@@ -88,18 +96,32 @@ function LogIn() {
           console.error("Error en el guardado del usuario:", error);
         }
       }
+      console.log("Ahora se debería recibir el token???")
 
       if (receivedToken) {
+        console.log("Si recibiste token!, ahora se intentará guardar el token!")
         try {
+          
           await SecureStore.setItemAsync('token', receivedToken);
           console.log('token recibido!', receivedToken);
           setLoginSuccess(true);
-
+          console.log("_--------------------------------")
+          console.log("debugging for push notifications")
+          const { status } = await Notifications.requestPermissionsAsync();
+          if (status !== 'granted') {
+            alert('¡Permiso para notificaciones no concedido!');
+            console.log("NO HAY PERMISO!!")
+            return null;  // No se puede continuar sin permisos
+          }else{
+            console.log("Si hay permiso para notificaciones")
+          }
+          console.log("_--------------------------------")
+          console.log("Finished debugging for push notifications")
           // Register for push notifications
           const pushToken = await registerForPushNotificationsAsync();
           console.log('Push token!!!>', pushToken);
 
-          // Save push token
+                    // Save push token
           const response = await axios.post(`${NGROK_URL}/api/v1/push_tokens`, {
             headers: {
               'Content-Type': 'application/json',
@@ -119,6 +141,9 @@ function LogIn() {
         catch (error) {
           console.error("Error en el guardado del token:", error);
         }
+      }
+      else{
+        console.log("En términos de token, no hay token")
       }
     }
     catch (error) {

@@ -2,12 +2,12 @@ require_relative Rails.root.join('app/services/push_notification_service').to_s
 
 class API::V1::EventPicturesController < ApplicationController
   include ImageProcessing
-  include Authenticable
+  #include Authenticable
 
   respond_to :json
 
   before_action :set_event_picture, only: [:destroy]
-  before_action :verify_jwt_token, except: [:index, :event_index]
+  #before_action :verify_jwt_token, except: [:index, :event_index]
 
   # GET /api/v1/event_pictures
   def index

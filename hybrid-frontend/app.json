@@ -10,6 +10,7 @@
       "ios",
       "android",
       "web"
+      
     ],
     "splash": {
       "image": "./assets/splash.png",
@@ -31,6 +32,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "notifications": {
+      "icon": "./assets/adaptive-icon.png",  
+      "color": "#000000",
+      "iosDisplayInForeground": true
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store"
@@ -40,6 +46,6 @@
         "projectId": "d02b112c-6af5-4289-afe9-9592931de821"
       }
     },
-    "owner": "lucasfreyess"
+    "owner": "lucasfreyess" 
   }
 }
