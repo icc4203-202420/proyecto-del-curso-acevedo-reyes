@@ -5,6 +5,8 @@ import { Button, Input } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const Feed = () => {
   const [feedItems, setFeedItems] = useState([]);
@@ -56,7 +58,7 @@ const Feed = () => {
     const filtered = feedItems.filter((item) => {
       const matchesFriend = friend ? item.user_handle?.toLowerCase().includes(friend.toLowerCase()) : true;
       const matchesBar = bar ? item.bar_name?.toLowerCase().includes(bar.toLowerCase()) : true;
-      const matchesCountry = country ? item.country?.toLowerCase().includes(country.toLowerCase()) : true;
+      const matchesCountry = country ? item.bar_country?.toLowerCase().includes(country.toLowerCase()) : true;
       const matchesBeer = beer ? item.beer_name?.toLowerCase().includes(beer.toLowerCase()) : true;
       const matchesType = type ? (type === "event" ? item.event_id : item.review_id) : true;
 
@@ -70,7 +72,13 @@ const Feed = () => {
   const clearFilters = () => {
     setFilterCriteria({ friend: '', bar: '', country: '', beer: '', type: '' });
     setFilteredItems(feedItems); // Reinicia la lista al original
-  };const renderFeedItem = ({ item }) => (
+  };
+  
+  const renderFeedItem = ({ item }) => {
+
+    const showDate = new Date(item.review_created_at || item.picture_created_at);
+    
+    return (
     <View style={styles.feedItem}>
       {item.review_id ? (
         // Evaluación de cerveza
@@ -78,16 +86,27 @@ const Feed = () => {
           <Text style={styles.title}>
             {item.user_handle} evaluó una cerveza
           </Text>
-          <Text style={styles.detail}>
-            Cerveza: {item.beer_name}
+
+          <Text style={styles.time}>
+            a las {format(showDate, "HH:mm", { locale: es })} del {format(showDate, "dd 'de' MMMM 'de' yyyy", { locale: es })}.
           </Text>
+          
           <Text style={styles.detail}>
-            Calificación: {item.review_rating}/5
+            Cerveza: {item.beer_name}, con una calificación promedio de {Math.round(item.beer_avg_rating * 100) / 100}/5 estrellas.
           </Text>
+          
+          <Text style={styles.detail}>
+            Calificación de tu amigo: {item.review_rating}/5 estrellas.
+          </Text>
+
+          <Text style={styles.detail}>
+            Servida en: {item.bar_name}, ubicado en {item.bar_line1}, {item.bar_line2}, {item.bar_city}, {item.bar_country}.
+          </Text>
+          
           <Button
-            title="Ver Cerveza"
-            onPress={() => {
-              navigation.navigate('BeerDetail', { beerId: item.beer_id });
+            title   = "Ver Bar"
+            onPress = {() => {
+              navigation.navigate('BarDetails', { barId: item.bar_id });
             }}
           />
         </>
@@ -97,95 +116,110 @@ const Feed = () => {
           <Text style={styles.title}>
             {item.user_handle} publicó en un evento
           </Text>
+
           <Text style={styles.time}>
-            Hora de publicación: {item.created_at || 'Lucas ponlo acá!'}
+            a las {format(showDate, "HH:mm", { locale: es })} del {format(showDate, "dd 'de' MMMM 'de' yyyy", { locale: es })}.
           </Text>
+          
           <View style={styles.imageContainer}>
-            {item.event_picture ? (
+            {item.picture_image_url ? (
               <Image
-                source={{ uri: item.event_picture }}
-                style={styles.eventImage}
+                source = {{ uri: item.picture_image_url }}
+                style  = {styles.eventImage}
               />
             ) : (
-              <Text>(Lucas ponlo acá! - Falta la foto)</Text>
+              <Text style={styles.detail}>
+                No subió foto!
+              </Text>
             )}
           </View>
+          
           <Text style={styles.detail}>
-            Descripción: {item.description || '(Lucas ponlo acá! - Descripción faltante)'}
+            Etiquetados: {item.picture_description || '(Lucas ponlo acá! - Handles faltantes)'}.
           </Text>
+          
           <Text style={styles.detail}>
-            Etiquetados: {item.handles?.join(', ') || '(Lucas ponlo acá! - Handles faltantes)'}
+            Evento: {item.event_name} en {item.bar_name}, {item.bar_country}.
           </Text>
-          <Text style={styles.detail}>
-            Evento: {item.event_name || '(Lucas ponlo acá! - Nombre de evento)'}
-          </Text>
-          <Text style={styles.detail}>
-            Bar: {item.bar_name || '(Lucas ponlo acá! - Nombre del bar)'}
-          </Text>
-          <Text style={styles.detail}>
-            País: {item.country || '(Lucas ponlo acá! - País faltante)'}
-          </Text>
+          
           <Button
-            title="Ver Evento"
-            onPress={() => {
+            title   = "Ver Evento"
+            onPress = {() => {
               navigation.navigate('EventDetails', { eventId: item.event_id });
             }}
           />
         </>
       )}
     </View>
-  );
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Mi Feed</Text>
+      
+      <Text style={styles.header}>
+        Mi Feed
+      </Text>
+      
+      {/* Botones de filtro */}
       <View style={styles.buttonRow}>
         <Button
-          title="Filtrar Publicaciones"
-          onPress={() => setFilterModalVisible(true)}
-          buttonStyle={styles.filterButton}
+          title       = "Filtrar Publicaciones"
+          onPress     = {() => setFilterModalVisible(true)}
+          buttonStyle = {styles.filterButton}
         />
         <Button
-          title="X"
-          onPress={clearFilters}
-          buttonStyle={styles.clearButton}
+          title       = "X"
+          onPress     = {clearFilters}
+          buttonStyle = {styles.clearButton}
         />
       </View>
+
+      {/* Lista de publicaciones */}
       <FlatList
-        data={filteredItems}
-        keyExtractor={(item) => `${item.review_id || item.event_picture_id}`}
-        renderItem={renderFeedItem}
-        contentContainerStyle={styles.list}
+        data                  = {filteredItems}
+        keyExtractor          = {(item) => `${item.review_id || item.event_picture_id}`}
+        renderItem            = {renderFeedItem}
+        contentContainerStyle = {styles.list}
       />
 
       {/* Modal para filtros */}
       <Modal
-        visible={filterModalVisible}
-        animationType="slide"
-        transparent={true}
+        visible       = {filterModalVisible}
+        animationType = "slide"
+        transparent   = {true}
       >
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Filtrar Feed</Text>
+          
+          <Text style={styles.modalTitle}>
+            Filtrar Feed
+          </Text>
+          
           <Input
-            placeholder="Amigo"
-            value={filterCriteria.friend}
-            onChangeText={(text) => setFilterCriteria({ ...filterCriteria, friend: text })}
+            placeholder  = "Amigo"
+            value        = {filterCriteria.friend}
+            onChangeText = {(text) => setFilterCriteria({ ...filterCriteria, friend: text })}
           />
           <Input
-            placeholder="Bar"
-            value={filterCriteria.bar}
-            onChangeText={(text) => setFilterCriteria({ ...filterCriteria, bar: text })}
+            placeholder  = "Bar"
+            value        = {filterCriteria.bar}
+            onChangeText = {(text) => setFilterCriteria({ ...filterCriteria, bar: text })}
           />
+          
           <Input
-            placeholder="País"
+            placeholder  = "País"
             value={filterCriteria.country}
             onChangeText={(text) => setFilterCriteria({ ...filterCriteria, country: text })}
           />
+          
           <Input
             placeholder="Cerveza"
             value={filterCriteria.beer}
             onChangeText={(text) => setFilterCriteria({ ...filterCriteria, beer: text })}
           />
+          
           <Text style={styles.modalLabel}>Tipo de publicación</Text>
+          
           <Picker
             selectedValue={filterCriteria.type}
             onValueChange={(value) => setFilterCriteria({ ...filterCriteria, type: value })}
@@ -195,6 +229,7 @@ const Feed = () => {
             <Picker.Item label="Evento" value="event" />
             <Picker.Item label="Cerveza" value="beer" />
           </Picker>
+
           <View style={styles.modalButtons}>
             <Button
               title="Aplicar Filtros"
@@ -206,6 +241,7 @@ const Feed = () => {
               buttonStyle={styles.cancelButton}
             />
           </View>
+          
         </View>
       </Modal>
     </View>
@@ -246,6 +282,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
     color: '#555',
+  },
+  time: {
+    fontSize: 14,
+    marginBottom: 8,
+    
   },
   buttonRow: {
     flexDirection: 'row',
