@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { Button } from '@rneui/themed';
 import { Avatar } from 'react-native-paper'; // Asegúrate de instalar react-native-paper
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -83,8 +84,8 @@ function LogIn() {
         }
       });
       
-      console.log("Repsuesta de backend:")
-      console.log(response);
+      //console.log("Repsuesta de backend:")
+      //console.log(response);
       const receivedToken = response.headers['authorization'];
       const receivedUser = response.data.status.data.user.id.toString();
 
@@ -136,10 +137,9 @@ function LogIn() {
           });
           console.log('Push token saved!!!>!');
           
-
           setTimeout(() => {
             navigation.navigate('Home');
-          }, 1000); // Redirige a "/" después de 1 segundo
+          }, 150); // Redirige a "/" después de 1 segundo
         }
         catch (error) {
           console.error("Error en el guardado del token:", error);
@@ -172,7 +172,12 @@ function LogIn() {
 
   return (
     <View style={styles.container}>
-      <Avatar.Icon size={120} icon="lock" style={styles.avatar} />
+      <Avatar.Icon 
+        size={120} 
+        icon="lock" 
+        style={styles.avatar} 
+        color="black"
+        />
       <Text style={styles.title}>Iniciar sesión</Text>
 
       {serverError ? <Text style={styles.errorText}>{serverError}</Text> : null}
@@ -220,10 +225,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#ffe5b4',
+    
   },
   avatar: {
     backgroundColor: 'transparent',
+    
   },
   title: {
     fontSize: 24,

@@ -8,8 +8,8 @@ import LogIn from './app/auth/logindex';
 import SignUp from './app/auth/regindex';
 import Home from './app/home/home';
 import Profile from './app/profile';
-import BeerDetail from './app/beers/BeerDetail';
-import BeerReview from './app/beers/BeerReview';
+import BeerDetails from './app/beers/BeerDetails';
+import BeerReviews from './app/beers/BeerReviews';
 import ReviewBeer from './app/beers/ReviewBeer';
 import ProfileDetails from './app/users/ProfileDetails';
 import BarDetails from './app/bars/BarDetails';
@@ -112,8 +112,8 @@ const App = () => {
             >
               <Stack.Screen name="Home" component={Home} />
               <Stack.Screen name="Profile" component={Profile} />
-              <Stack.Screen name="BeerDetail" component={BeerDetail} />
-              <Stack.Screen name="BeerReview" component={BeerReview} />
+              <Stack.Screen name="BeerDetails" component={BeerDetails} />
+              <Stack.Screen name="BeerReviews" component={BeerReviews} />
               <Stack.Screen name="ReviewBeer" component={ReviewBeer} />
               <Stack.Screen name="LogIn" component={LogIn} />
               <Stack.Screen name="SignUp" component={SignUp} />

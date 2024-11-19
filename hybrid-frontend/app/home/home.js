@@ -72,10 +72,9 @@ const Home = () => {
         <SearchTabs searchKeywords={searchKeywords} />
       ) : (
         <>
-          <Button title="Logout" onPress={handleLogout} />
+          <Button title="Cerrar Sesión" onPress={handleLogout} />
           
           <Feed />
-          
         </>
       )}
       

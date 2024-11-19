@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TextInput, Alert } from 'react-native';
 import { Rating, Button } from 'react-native-elements';
+import { Icon } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import useAxios from 'axios-hooks';
@@ -23,7 +24,7 @@ const validationSchema = Yup.object({
 
 const initialValues = {
   text: '',
-  rating: 1,
+  rating: 1.1,
 };
 
 const NGROK_URL = process.env.NGROK_URL;
@@ -82,12 +83,14 @@ const ReviewBeer = ({ route }) => {
         }
       });
 
-      console.log("RESPUESTA>", response);
+      //console.log("RESPUESTA>", response);
+      Alert.alert("Éxito", "Reseña enviada correctamente");
     
       navigation.goBack();
         
     } catch (error) {
       setServerError('Hubo un error al enviar la reseña');
+      Alert.alert("Error", "Hubo un error al enviar la reseña");
       console.error(error);
     } finally {
       setSubmitting(false);
@@ -95,7 +98,7 @@ const ReviewBeer = ({ route }) => {
   };
 
   if (loading) return <ActivityIndicator size="large" />;
-  if (error) return <Text>Error loading review beer view.</Text>;
+  if (error) return <Text>Error al cargar el formulario de la reseña</Text>;
 
   return (
     <View style={styles.container}>
@@ -122,15 +125,30 @@ const ReviewBeer = ({ route }) => {
             <Text>Califica la cerveza:</Text>
             <Rating
               name           = "rating"
-              defaultValue   = {1}
+              //defaultValue   = {1.1}
+              //value          = {values.rating}
               size           = {30}
-              onRatingChange = {(value) => setFieldValue('rating', value)}
+              tintColor      = "#f2f2f2"
+              showRating
+              fractions      = {1}
+              startingValue  = {1.1}
+              onFinishRating = {(value) => setFieldValue('rating', value)}
+              style          = {{ paddingVertical: 10 }}
             />
 
             <Button
-              title    = {loading ? 'Enviando...' : 'Enviar Reseña'}
+              title    = {loading ? ' Enviando...' : ' Enviar Reseña'}
               onPress  = {handleSubmit}
               disabled = {isSubmitting || loading}
+              icon     = {
+                <Icon 
+                  name="send" 
+                  type="feather" 
+                  size={20} 
+                  color="white"
+                />
+              }
+
             />
 
             {serverError && <Text style={styles.errorText}>{serverError}</Text>}

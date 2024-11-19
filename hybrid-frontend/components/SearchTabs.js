@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import BarsList from '../app/bars/BarsList';
 import BeersList from '../app/beers/BeersList';
@@ -22,9 +22,9 @@ function SearchTabs({ searchKeywords, setSearchKeywords }) {
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'first', title: 'Bars' },
-    { key: 'second', title: 'Beers' },
-    { key: 'third', title: 'Profiles' },
+    { key: 'first', title: 'Bares' },
+    { key: 'second', title: 'Cervezas' },
+    { key: 'third', title: 'Perfiles' },
   ]);
 
   const renderScene = SceneMap({
@@ -35,10 +35,10 @@ function SearchTabs({ searchKeywords, setSearchKeywords }) {
 
   return (
     <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
+      navigationState = {{ index, routes }}
+      renderScene     = {renderScene}
+      onIndexChange   = {setIndex}
+      initialLayout   = {{ width: layout.width }}
     />
   );
 }

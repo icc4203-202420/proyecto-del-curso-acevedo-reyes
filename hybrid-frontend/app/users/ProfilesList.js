@@ -49,7 +49,9 @@ const ProfilesList = ({ searchKeywords, isActive }) => {
   return (
     <View style={styles.container}>
       {filteredUsers.length === 0 ? (
-        <Text>No Users found.</Text>
+        <Text style={styles.title}>
+          No se encontraron Usuarios.
+        </Text>
       ) : (
         <FlatList
           data         = {filteredUsers}
@@ -83,6 +85,12 @@ const styles = StyleSheet.create({
   beerName: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  title : {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 20,
+    alignSelf: 'center',
   },
 });
 

@@ -47,17 +47,21 @@ const BeersList = ({ searchKeywords, isActive }) => {
   return (
     <View style={styles.container}>
       {filteredBeers.length === 0 ? (
-        <Text>No beers found.</Text>
+        <Text style={styles.title}>
+          No se encontraron Cervezas.
+        </Text>
       ) : (
         <FlatList
-          data={filteredBeers}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
+          data         = {filteredBeers}
+          keyExtractor = {(item) => item.id.toString()}
+          renderItem   = {({ item }) => (
             <TouchableOpacity
-              style={styles.beerItem}
-              onPress={() => navigation.navigate('BeerDetail', { beerId: item.id })} // Navegar a BeerDetail
+              style    = {styles.beerItem}
+              onPress  = {() => navigation.navigate('BeerDetails', { beerId: item.id })} // Navegar a BeerDetails
             >
-              <Text style={styles.beerName}>{item.name}</Text>
+              <Text style={styles.beerName}>
+                {item.name}
+              </Text>
             </TouchableOpacity>
           )}
         />
@@ -79,6 +83,12 @@ const styles = StyleSheet.create({
   beerName: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  title : {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 20,
+    alignSelf: 'center',
   },
 });
 

@@ -1,45 +1,6 @@
-/*
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#ffe5b4',
-  },
-  avatar: {
-    backgroundColor: 'transparent',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 20,
-  },
-  input: {
-    height: 50,
-    width: '100%',
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 5,
-  },
-});
-*/
-
 import React from 'react';
-import { FlatList, View, ScrollView, KeyboardAvoidingView, Text, StyleSheet, TextInput, Button } from 'react-native';
+import { FlatList, View, ScrollView, KeyboardAvoidingView, Text, StyleSheet, TextInput } from 'react-native';
+import { Button } from '@rneui/themed';
 import { Avatar } from 'react-native-paper';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -175,7 +136,12 @@ export default function SignUp() {
   <View style={styles.container}>
     
     <View style={styles.cont2}>
-      <Avatar.Icon size={120} icon="lock" style={styles.avatar} />
+      <Avatar.Icon 
+        size={120} 
+        icon="lock" 
+        style={styles.avatar}
+        color='black' 
+      />
       <Text style={styles.title}> ¡Registrate!</Text>
     </View>
 
@@ -194,9 +160,10 @@ export default function SignUp() {
           />
           <View style={styles.buttonContainer}>
               <Button 
-                title="¿Ya estas registrado? ¡Inicia sesión!" 
+                title="¡Inicia sesión!" 
                 onPress={handleBack} 
                 color="orange" 
+                marginVertical={10}
               />
               
               <Button 
@@ -216,10 +183,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexGrow: 1,
     padding: 20,
-    backgroundColor: '#ffe5b4',
     justifyContent: 'center',
     //alignItems: 'center',
-    
   },
   input: {
     height: 50,
@@ -245,12 +210,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginVertical: 20,
   },
   cont2: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ffe5b4',
+    
   },
 });
 

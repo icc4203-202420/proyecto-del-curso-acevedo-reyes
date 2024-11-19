@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native';
-import { Icon, Divider, Button } from '@rneui/themed';
+import { Icon, Divider, Button, Card } from '@rneui/themed';
 import axios from 'axios';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Formik } from 'formik';
@@ -168,18 +168,18 @@ function EventDetails() {
        {/* direccion a EventPictures!! */}
        <View style={{ alignItems: 'center' }}>
         <Button
-          type="clear"
-          onPress={() => navigation.navigate('EventPictures', { eventId: event.id })}
-          icon={
+          type    = "clear"
+          onPress = {() => navigation.navigate('EventPictures', { eventId: event.id })}
+          icon    = {
             <Icon
-              name="videocam"
-              type="material"
-              color="black"
-              size={24}
+              name  = "videocam"
+              type  = "material"
+              color = "black"
+              size  = {24}
             />
           }
-          title="Ver y subir Fotos a la Galería!"
-          titleStyle={{ color: 'black', fontWeight: 'semibold' }}
+          title      = "Ver y subir Fotos a la Galería!"
+          titleStyle = {{ color: 'black', fontWeight: 'semibold' }}
         />
       </View>
 
@@ -200,47 +200,70 @@ function EventDetails() {
         >
           {({ handleSubmit, isSubmitting }) => (
             <Button
-              title={isSubmitting ? "Enviando solicitud..." : "Confirmar Asistencia"}
-              onPress={handleSubmit}
-              disabled={isSubmitting}
+              title    = {isSubmitting ? "Enviando solicitud..." : "Confirmar Asistencia"}
+              onPress  = {handleSubmit}
+              disabled = {isSubmitting}
             />
           )}
         </Formik>
       )}
 
-      <Text style={styles.sectionTitle}>Asistentes</Text>
-      <View style={styles.attendees}>
-        {attendances.map((attendance, index) => (
-          <Text key={attendance.id}>@{attendance.user.handle}{index < attendances.length - 1 ? ', ' : ''}</Text>
-        ))}
-      </View>
+      <Card>
+        <Text style={styles.description}>{event.description}</Text>
 
-      <Text style={styles.sectionTitle}>Amigos Asistentes</Text>
-      <View style={styles.attendees}>
-        {friends.length > 0 ? (
-          friends.some(friend => attendances.some(a => a.user.id === friend.id)) ? (
-            attendances.map((attendance) => (
-              friends.some(friend => friend.id === attendance.user.id) && (
-                <Text key={attendance.id}>@{attendance.user.handle}</Text>
-              )
-            ))
-          ) : <Text>Ninguno de tus amigos ha confirmado asistencia.</Text>
-        ) : (
-          <Text>Aún no tienes amigos.</Text>
-        )}
-      </View>
+        <View style={styles.detailsContainer}>
+          <Icon name="today" />
+          <Text style={styles.detailText}>{formatDate(event.date)}</Text>
+        </View>
 
-      <Text style={styles.description}>{event.description}</Text>
+        <View style={styles.detailsContainer}>
+          <Icon name="schedule" />
+          <Text style={styles.detailText}>Duración: desde {event.start_date || 'indefinida'} hasta {event.end_date || 'indefinida'}</Text>
+        </View>
+      </Card> 
 
-      <View style={styles.detailsContainer}>
-        <Icon name="today" />
-        <Text style={styles.detailText}>Fecha del evento: {formatDate(event.date)}</Text>
-      </View>
+      <Card>
+        <Text style={styles.sectionTitle}>
+          <Icon 
+            name    = "user-friends" 
+            type    = "font-awesome-5" 
+            color   = "black" 
+            size    = {24} 
+          /> Amigos Asistentes
+        </Text>
 
-      <View style={styles.detailsContainer}>
-        <Icon name="schedule" />
-        <Text style={styles.detailText}>Duración: desde {event.start_date || 'indefinida'} hasta {event.end_date || 'indefinida'}</Text>
-      </View>
+        <View style={styles.attendees}>
+          {friends.length > 0 ? (
+            friends.some(friend => attendances.some(a => a.user.id === friend.id)) ? (
+              attendances.map((attendance) => (
+                friends.some(friend => friend.id === attendance.user.id) && (
+                  <Text key={attendance.id}>@{attendance.user.handle}</Text>
+                )
+              ))
+            ) : <Text>Ninguno de tus amigos ha confirmado asistencia.</Text>
+          ) : (
+            <Text>Aún no tienes amigos.</Text>
+          )}
+        </View>
+      </Card>
+
+      <Card>
+        <Text style={styles.sectionTitle}>
+          <Icon 
+            name    = "person" 
+            type    = "material" 
+            color   = "black" 
+            size    = {24} 
+          /> Asistentes
+        </Text>
+        <View style={styles.attendees}>
+          {attendances.map((attendance, index) => (
+            <Text key={attendance.id}>@{attendance.user.handle}{index < attendances.length - 1 ? ', ' : ''}</Text>
+          ))}
+        </View>
+      </Card>
+
+      
     </ScrollView>
   );
 }
@@ -273,13 +296,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'blue',
     textAlign: 'center',
+    marginVertical: 16,
   },
   sectionTitle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center',
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 16,
   },
   attendees: {
+    alignSelf: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginVertical: 8,

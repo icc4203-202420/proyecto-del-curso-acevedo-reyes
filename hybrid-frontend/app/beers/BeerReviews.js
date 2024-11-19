@@ -1,16 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Rating, Button } from 'react-native-elements';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FeedContext } from '../../contexts/FeedContext';
+import { set } from 'date-fns';
 
 const NGROK_URL = process.env.NGROK_URL;
 
-const BeerReview = ({ route }) => {
+const BeerReviews = ({ route }) => {
   const { beerId } = route.params;
+  const { currentUserId } = useContext(FeedContext);
+
   const [beer, setBeer] = useState(null);
-  const [user, setUser] = useState(null);
+  //const [user, setUser] = useState(null);
   const [userLoading, setUserLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,21 +30,22 @@ const BeerReview = ({ route }) => {
   //fetchear el usuario (todavia no guardamos el token si jejejej)
   //useEffect(() => {
   //const getUser = async () => {
-  async function getUser() {
-    try {
-      const currentUser = await AsyncStorage.getItem('user');
-      setUser(Math.round(currentUser));
-      setUserLoading(false);
-      return Math.round(currentUser);
-    }
-    catch (error) {
-      console.error(error);
-    }
-  };
+ // async function getUser() {
+  //  try {
+  //    const currentUser = await AsyncStorage.getItem('user');
+  //    setUser(Math.round(currentUser));
+  //    setUserLoading(false);
+  //    return Math.round(currentUser);
+  //  }
+  //  catch (error) {
+  //    console.error(error);
+  //  }
+  //};
 
     //getUser();
   //}, []);
 
+  // GET de todas las reviews
   useEffect(() => {
     const fetchBeerReviews = async () => {
       try {
@@ -54,15 +59,16 @@ const BeerReview = ({ route }) => {
         const fetchedBeer = response.data.beer;
         setBeer(fetchedBeer);
         
-        const currentUser = await getUser(); //esto no me funciona que horrible!!! asyncStorage deberias esr syncstorage!!
-        setUser(currentUser);
-        console.log("User>", user);
+        //const currentUser = await getUser(); //esto no me funciona que horrible!!! asyncStorage deberias esr syncstorage!!
+        //setUser(currentUser);
+        console.log("User>", currentUserId);
+        setUserLoading(false);
         //if (!userLoading) {
         
-        const userReview = fetchedBeer.reviews.find(review => review.user.id === user);
+        const userReview = fetchedBeer.reviews.find(review => review.user.id === currentUserId);
         setUserReview(userReview);
 
-        const otherReviews = fetchedBeer.reviews.filter(review => review.user.id !== user);
+        const otherReviews = fetchedBeer.reviews.filter(review => review.id !== userReview.Id);
         setReviews(otherReviews || []);
         
         setAvgRating(fetchedBeer.avg_rating || 0);
@@ -85,43 +91,6 @@ const BeerReview = ({ route }) => {
   if (loading) return <ActivityIndicator size="large" />;
   if (error) return <Text>Error loading beer reviews.</Text>;
 
-  /*
-  return (
-    <View style={styles.container}>
-      <Button
-        title="Back to Beer Details"
-        onPress={() => navigation.goBack()}
-        buttonStyle={styles.backButton}
-      />
-
-      <Text style={styles.beerName}>{beer.name}</Text>
-      <Rating imageSize={20} readonly startingValue={avgRating} />
-      <Text style={styles.avgRating}>Rating: {avgRating.toFixed(2)} ({reviews.length} reviews)</Text>
-
-       Reseña del usuario actual
-      {userReview && (
-        <View style={styles.reviewCard}>
-          <Text style={styles.userName}>You (@{userReview.user.handle})</Text>
-          <Rating imageSize={20} readonly startingValue={userReview.rating} />
-          <Text style={styles.reviewText}>{userReview.text}</Text>
-        </View>
-      )}
-
-      <FlatList
-        data={reviews}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.reviewCard}>
-            <Text style={styles.userName}>@{item.user.handle}</Text>
-            <Rating imageSize={20} readonly startingValue={item.rating} />
-            <Text style={styles.reviewText}>{item.text}</Text>
-          </View>
-        )}
-      />
-    </View>
-  );
-  */
-
   return (
     <View style={styles.container}>
       <Button
@@ -131,18 +100,29 @@ const BeerReview = ({ route }) => {
       />
   
       <Text style={styles.beerName}>{beer.name}</Text>
-      <Rating imageSize={20} readonly startingValue={avgRating} />
+      <Rating 
+        imageSize={20} 
+        readonly 
+        startingValue={avgRating} 
+        tintColor      = "#f2f2f2"
+      />
       <Text style={styles.avgRating}>Rating: {avgRating.toFixed(2)} ({reviews.length + (userReview ? 1 : 0)} reviews)</Text>
   
       {userLoading ? (
         <ActivityIndicator />
       ) : (
-      <>
+      <View>
         {/* Reseña del usuario actual */}
         {userReview && (
+          
           <View style={styles.reviewCard}>
             <Text style={styles.userName}>Tu (@{userReview.user.handle})</Text>
-            <Rating imageSize={20} readonly startingValue={userReview.rating} />
+            <Rating 
+              imageSize     = {20} 
+              readonly 
+              startingValue = {userReview.rating} 
+              tintColor     = "#f2f2f2"
+            />
             <Text style={styles.reviewText}>{userReview.text}</Text>
           </View>
         )}
@@ -150,17 +130,22 @@ const BeerReview = ({ route }) => {
         {/* Reseñas de otros usuarios */}
         <FlatList
           initialNumToRender={6}
-          data={reviews}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({ item }) => (
+          data         = {reviews}
+          keyExtractor = {item => item.id.toString()}
+          renderItem   = {({ item }) => (
             <View style={styles.reviewCard}>
               <Text style={styles.userName}>@{item.user.handle}</Text>
-              <Rating imageSize={20} readonly startingValue={item.rating} />
+              <Rating 
+                imageSize={20} 
+                readonly 
+                startingValue={item.rating} 
+                tintColor      = "#f2f2f2"
+              />
               <Text style={styles.reviewText}>{item.text}</Text>
             </View>
           )}
         />
-      </>
+      </View>
       
       )}
       
@@ -203,5 +188,5 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BeerReview;
+export default BeerReviews;
 

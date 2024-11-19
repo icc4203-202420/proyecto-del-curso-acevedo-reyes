@@ -49,7 +49,9 @@ const BarsList = ({ searchKeywords, isActive }) => {
   return (
     <View style={styles.container}>
       {filteredBars.length === 0 ? (
-        <Text>No Bars found.</Text>
+        <Text style={styles.title}>
+          No se encontraron Bares.
+        </Text>
       ) : (
         <FlatList
           data         = {filteredBars}
@@ -83,6 +85,12 @@ const styles = StyleSheet.create({
   beerName: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  title : {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 20,
+    alignSelf: 'center',
   },
 });
 

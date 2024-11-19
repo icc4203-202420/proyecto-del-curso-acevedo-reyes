@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Image, ActivityIndicator, Alert, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ActivityIndicator, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+import { Button, Icon } from '@rneui/themed';
 import axios from 'axios';
 import placeHolder from '../assets/placeholder.jpg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { set } from 'date-fns';
 
 const NGROK_URL = process.env.NGROK_URL;
 
@@ -16,6 +18,7 @@ function ProfileDetails({ route }) {
   const [user, setUser] = useState(null);               //el usuario del perfil que se está viendo
   const [bars, setBars] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [friendshipDone, setFriendshipDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userLoading, setUserLoading] = useState(true); //usado para el usuario logueado (currentUser)
   const [error, setError] = useState(null);
@@ -115,6 +118,7 @@ function ProfileDetails({ route }) {
         bar_id: selectedBar,
       })
       .then(response => {
+        setFriendshipDone(true);
         Alert.alert("Amistad creada con éxito");
       })
       .catch(error => {
@@ -142,7 +146,13 @@ function ProfileDetails({ route }) {
         <View style={styles.infoContainer}>
           
           <Text style={styles.userHandle}>
-            <Text style={styles.handleIcon}>👤 @</Text> {user.handle}
+            <Text style={styles.handleIcon}>
+              <Icon
+                name  = "user-alt"
+                type  = "font-awesome-5"
+                color = "black"
+                size  = {16}
+              /> @</Text> {user.handle}
           </Text>
           
           <Text style={styles.userDescription}>
@@ -152,13 +162,21 @@ function ProfileDetails({ route }) {
       
       </View>
 
-      {/* si el usuario logeado no es el del perfil, y no son amigos, entonces ocurre lo siguiente*/}
-      {user.id !== currentUser && !friends.some(friend => friend.id === user.id) && (
+      
+      {/* si el usuario logeado no es el del perfil, y ya son amigos, entonces no se puede crear la amistad*/}
+      { ( (user.id !== currentUser && friends.some(friend => friend.id === user.id)) || (friendshipDone) ) ? (
+        <Text style={styles.friendStatus}>
+          ¡Ya son amigos!
+        </Text>
+      ) : (
+        
         <View style={styles.friendSection}>
-          <Text style={styles.friendPrompt}>Añade un bar de un evento en que se hayan conocido</Text>
+          
+          <Text style={styles.friendPrompt}>
+            Añade un bar de un evento en que se hayan conocido
+          </Text>
 
           <View style={styles.pickerContainer}>
-            
             <Picker
               selectedValue = {selectedBar}
               onValueChange = {(itemValue) => setSelectedBar(itemValue)}
@@ -166,7 +184,7 @@ function ProfileDetails({ route }) {
             >
               <Picker.Item 
                 key     = "placeholder" 
-                label   = "Selecciona un bar" 
+                label   = "Elige un bar" 
                 value   = {null}
               />
               
@@ -177,18 +195,23 @@ function ProfileDetails({ route }) {
                   value = {bar.id} 
                 />
               ))}
-
             </Picker>
-
-            <Button title="Añadir Amigo" onPress={handleAddFriend} />
-          
           </View>
-        </View>
-      )}
 
-      {/* si el usuario logeado no es el del perfil, y ya son amigos, entonces ocurre lo siguiente*/}
-      {user.id !== currentUser && friends.some(friend => friend.id === user.id) && (
-        <Text style={styles.friendStatus}>¡Ya son amigos!</Text>
+          <Button style={{marginTop: 10}}
+            title   = " Añadir Amigo" 
+            onPress = {handleAddFriend} 
+            icon    = {
+              <Icon 
+                name  = "user-plus" 
+                type  = "font-awesome-5" 
+                color = "white" 
+                size  = {24} 
+              />
+            }
+          />
+    
+        </View>
       )}
     </View>
   );
@@ -256,16 +279,15 @@ const styles = StyleSheet.create({
   },
   friendPrompt: {
     fontSize: 16,
-    marginBottom: 10,
+    
     textAlign: 'center',
   },
   pickerContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
   picker: {
-    width: 200,
-    height: 40,
+    width: 350,
+    height: 200,
   },
   friendStatus: {
     fontSize: 16,

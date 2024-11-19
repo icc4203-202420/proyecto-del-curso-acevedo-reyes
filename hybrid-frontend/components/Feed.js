@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 //import { subscribeToFeed } from "./SubscribeToFeed";
 import { View, Text, Image, StyleSheet, FlatList, Modal, TouchableOpacity } from "react-native";
-import { Button, Input } from '@rneui/themed';
+import { Button, Input, Icon } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 //import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
@@ -98,18 +98,18 @@ const Feed = () => {
           </Text>
           
           <Text style={styles.detail}>
-            Cerveza: {item.beer_name}, con una calificación promedio de {Math.round(item.beer_avg_rating * 100) / 100}/5 estrellas.
+            <Text style={styles.bold}>Cerveza: </Text>{item.beer_name}, con una calificación promedio de {Math.round(item.beer_avg_rating * 100) / 100}/5 estrellas.
           </Text>
           
           <Text style={styles.detail}>
-            Calificación de tu amigo: {item.review_rating}/5 estrellas.
+          <Text style={styles.bold}>Calificación de tu amigo: </Text>{item.review_rating}/5 estrellas.
           </Text>
 
           <Text style={styles.detail}>
-            Servida en: {item.bar_name}, ubicado en {item.bar_line1}, {item.bar_line2}, {item.bar_city}, {item.bar_country}.
+            <Text style={styles.bold}>Servida en: </Text>{item.bar_name}, ubicado en {item.bar_line1}, {item.bar_line2}, {item.bar_city}, {item.bar_country}.
           </Text>
           
-          <Button
+          <Button style={styles.button}
             title   = "Ver Bar"
             onPress = {() => {
               navigation.navigate('BarDetails', { barId: item.bar_id });
@@ -141,14 +141,14 @@ const Feed = () => {
           </View>
           
           <Text style={styles.detail}>
-            Etiquetados: {item.picture_description || '(Lucas ponlo acá! - Handles faltantes)'}.
+            <Text style={styles.bold}>Etiquetados: </Text>{item.picture_description || 'Sin etiquetados.'}
           </Text>
           
           <Text style={styles.detail}>
-            Evento: {item.event_name} en {item.bar_name}, {item.bar_country}.
+            <Text style={styles.bold}>Evento: </Text>{item.event_name} en {item.bar_name}, {item.bar_country}.
           </Text>
           
-          <Button
+          <Button style={styles.button}
             title   = "Ver Evento"
             onPress = {() => {
               navigation.navigate('EventDetails', { eventId: item.event_id });
@@ -169,16 +169,23 @@ const Feed = () => {
       
       {/* Botones de filtro */}
       <View style={styles.buttonRow}>
-        <Button
-          title       = "Filtrar Publicaciones"
-          onPress     = {() => setFilterModalVisible(true)}
-          buttonStyle = {styles.filterButton}
+        
+        <Icon 
+          name    = "filter-alt" 
+          type    = "material" 
+          color   = "black" 
+          size    = {24} 
+          onPress = {() => setFilterModalVisible(true)}
         />
-        <Button
-          title       = "X"
-          onPress     = {clearFilters}
-          buttonStyle = {styles.clearButton}
+        
+        <Icon 
+          name    = "cancel" 
+          type    = "material" 
+          color   = "black" 
+          size    = {24} 
+          onPress = {clearFilters}
         />
+        
       </View>
 
       {/* Lista de publicaciones */}
@@ -193,7 +200,6 @@ const Feed = () => {
       <Modal
         visible       = {filterModalVisible}
         animationType = "slide"
-        transparent   = {true}
       >
         <View style={styles.modalContainer}>
           
@@ -203,35 +209,41 @@ const Feed = () => {
           
           <Input
             placeholder  = "Amigo"
+            placeholderTextColor="white"
             value        = {filterCriteria.friend}
             onChangeText = {(text) => setFilterCriteria({ ...filterCriteria, friend: text })}
           />
           <Input
             placeholder  = "Bar"
+            placeholderTextColor="white"
             value        = {filterCriteria.bar}
             onChangeText = {(text) => setFilterCriteria({ ...filterCriteria, bar: text })}
           />
           
           <Input
             placeholder  = "País"
-            value={filterCriteria.country}
-            onChangeText={(text) => setFilterCriteria({ ...filterCriteria, country: text })}
+            placeholderTextColor="white"
+            value        = {filterCriteria.country}
+            onChangeText = {(text) => setFilterCriteria({ ...filterCriteria, country: text })}
           />
           
           <Input
-            placeholder="Cerveza"
-            value={filterCriteria.beer}
-            onChangeText={(text) => setFilterCriteria({ ...filterCriteria, beer: text })}
+            placeholder  = "Cerveza"
+            placeholderTextColor="white"
+            value        = {filterCriteria.beer}
+            onChangeText = {(text) => setFilterCriteria({ ...filterCriteria, beer: text })}
           />
           
-          <Text style={styles.modalLabel}>Tipo de publicación</Text>
+          <Text style={styles.modalLabel}>
+            Tipo de publicación
+          </Text>
           
           <Picker
-            selectedValue={filterCriteria.type}
-            onValueChange={(value) => setFilterCriteria({ ...filterCriteria, type: value })}
-            style={styles.picker}
+            selectedValue = {filterCriteria.type}
+            onValueChange = {(value) => setFilterCriteria({ ...filterCriteria, type: value })}
+            style         = {styles.picker}
           >
-            <Picker.Item label="Seleccione un tipo" value="" />
+            <Picker.Item label="Sin filtro" value="" />
             <Picker.Item label="Evento" value="event" />
             <Picker.Item label="Cerveza" value="beer" />
           </Picker>
@@ -293,7 +305,6 @@ const styles = StyleSheet.create({
   time: {
     fontSize: 14,
     marginBottom: 8,
-    
   },
   buttonRow: {
     flexDirection: 'row',
@@ -303,10 +314,6 @@ const styles = StyleSheet.create({
   filterButton: {
     backgroundColor: '#007bff',
     width: '70%',
-  },
-  clearButton: {
-    backgroundColor: '#ff4d4d',
-    width: '25%',
   },
   modalContainer: {
     flex: 1,
@@ -325,6 +332,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     marginTop: 12,
+    marginBottom: 8,
   },
   picker: {
     width: '100%',
@@ -338,9 +346,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
   },
-  cancelButton: {
-    backgroundColor: '#ff4d4d',
-  },
   imageContainer: {
     marginBottom: 8,
     alignItems: 'center',
@@ -348,6 +353,12 @@ const styles = StyleSheet.create({
   eventImage: {
     width: '100%',
     height: 200,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  button: {
+    marginTop: 8,
   },
 });
 

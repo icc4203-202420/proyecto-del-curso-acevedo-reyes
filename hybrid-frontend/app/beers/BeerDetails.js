@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native'; // Importa el hook de 
 
 const NGROK_URL = process.env.NGROK_URL;
 
-const BeerDetail = ({ route }) => {
+const BeerDetails = ({ route }) => {
   const { beerId } = route.params; // Obtener la ID de la cerveza de los parámetros de navegación
   const [beer, setBeer] = useState(null);
   const [bars, setBars] = useState([]);
@@ -59,7 +59,7 @@ const BeerDetail = ({ route }) => {
   
   const handleSubmit = () => {
     // Aquí se manejaría el envío de datos al backend
-    navigation.navigate('BeerReview', { beerId: beerId})
+    navigation.navigate('BeerReviews', { beerId: beerId})
   };
 
 
@@ -74,16 +74,24 @@ const BeerDetail = ({ route }) => {
             {beer.name}
           </Text>
           
-          <Text> (esta medio feo pero el lapiz lleva a escribir review) </Text>
+          <View style={styles.ratingContainer}>
+            <Icon 
+              name="pencil"
+              size={24}
+              color="black"
+              onPress={() => navigation.navigate('ReviewBeer', { beerId: beerId })}
+            />
 
-          <Icon 
-            name="pencil"
-            size={20}
-            color="black"
-            onPress={() => navigation.navigate('ReviewBeer', { beerId: beerId })}
-          />
+            <Rating 
+              imageSize       = {20} 
+              readonly
+              
+              fractions       = "{1}"
+              startingValue   = {beer.avg_rating || 0} 
+              tintColor       = "#f2f2f2"
+            />
+          </View>
 
-          <Rating imageSize={20} readonly startingValue={beer.avg_rating || 0} />
           <Text style={styles.text}>
             Rating: {(beer.avg_rating ? beer.avg_rating.toFixed(2) : 'N/A')} 
           </Text>
@@ -138,6 +146,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
 });
 
-export default BeerDetail;
+export default BeerDetails;
