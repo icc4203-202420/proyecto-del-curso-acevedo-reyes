@@ -40,6 +40,8 @@ redis-cli ping
 
 si recibes _PONG_ de vuelta, entonces esta conectado! sino entonces algo esta mal... y no podras correr el feed..
 
+Finalmente, es importante notar que la conexion websocket es persistente en toda la aplicacion, por lo que deberia ser posible mandar una foto en un evento, para luego verla en el Feed en tiempo real.
+
 ## Forwarding del Backend con Ngrok
 
 Nos imaginamos que, como el profesor recomendó usar Ngrok para dicho propósito, entonces debes tener Ngrok! Simplemente hay que abrir el backend en su carpeta:
