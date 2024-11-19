@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, TextInput, StyleSheet, Text, Button } from 'react-native';
 //import BeersList from '../beers/BeersList';
 import SearchTabs from '../../components/SearchTabs';
@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Feed from '../../components/Feed';
+import { FeedContext } from '../../contexts/FeedContext';
 
 // falta hacer que en logout se elimine el push token actual... horribble..
 
@@ -15,6 +16,10 @@ const Home = () => {
 
   const [showSearchTabs, setShowSearchTabs] = useState(false);
   const inputRef = React.createRef(null);
+
+  const { currentUserId } = useContext(FeedContext);
+
+  console.log("currentUserId en HOME>", currentUserId);
 
   const handleTextChange = (text) => {
     setSearchKeywords(text);
@@ -68,7 +73,9 @@ const Home = () => {
       ) : (
         <>
           <Button title="Logout" onPress={handleLogout} />
+          
           <Feed />
+          
         </>
       )}
       

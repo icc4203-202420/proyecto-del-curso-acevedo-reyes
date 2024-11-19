@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
+      post 'attendances/test', to: 'attendances#test'
       resources :bars
       resources :beers
       resources :events, only: [:index, :show]

@@ -18,11 +18,11 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     #origins '*' # later change to the domain of the frontend app
-    origins 'localhost:3000', 'localhost:3001', 'localhost:8081'
+    origins 'localhost:3000', 'localhost:3001', 'localhost:8081', 'exp://o5hlfss-lucasfreyess-8081.exp.direct'
     resource '*',
              headers: :any,
              methods: %i[get post put patch delete options head],
              #expose: [:Authorization]
-             expose: ['Access-Control-Allow-Origin']  # Exponer los headers necesarios
+             expose: ['Authorization', 'Access-Control-Allow-Origin'] # Exponer los headers necesarios
   end
 end

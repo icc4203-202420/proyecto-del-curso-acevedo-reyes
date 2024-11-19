@@ -1,6 +1,44 @@
-# Leer porfavor!! Actualizaciones de corrida de entrega 2.2...
+# Leer porfavor!! Actualizaciones de corrida de entrega 2.3...
 
 Hola Tomás! Aquí unas instrucciones sobre como correr el proyecto híbrido, sin dolores de cabeza!!
+
+Nuestro proyecto esta en el SDK 51 de Expo; es decir, no lo actualizamos a la ultima version!
+
+## Instalar Redis
+
+Redis es (lamentablemente) necesario para poder correr el ActionCable y que le llegue la info del backend al frontend a un usuario a traves de su stream.
+
+Hay que instalar el stack de Redis. Los pasos estan en [este link!](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/linux/). Solo tienes que seguir la parte que dice _From the official Ubuntu/Debian APT Repository_, los cuales estan aqui por conveniencia:
+
+```sh
+sudo apt-get install lsb-release curl gpg
+
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+
+sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+
+sudo apt-get update
+
+sudo apt-get install redis-stack-server
+```
+
+Recomiendo que Redis corra al empezar wsl solo por si acaso, lo cual se puede hacer asi:
+
+```sh
+sudo systemctl enable redis-stack-server
+
+sudo systemctl start redis-stack-server
+```
+
+para checkear si es que se esta conectado a redis, haz
+
+```sh
+redis-cli ping
+```
+
+si recibes _PONG_ de vuelta, entonces esta conectado! sino entonces algo esta mal... y no podras correr el feed..
 
 ## Forwarding del Backend con Ngrok
 

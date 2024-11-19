@@ -47,18 +47,28 @@ class API::V1::UsersController < ApplicationController
 
   # GET /api/v1/users/:id/friendships: retorna una lista de todas los user que son amigos segun el modelo Friendship
   def friendships
-    puts("LLAMANDO A USER CONTROLER?!")
+    puts("LLAMANDO A USER CONTROLER?!!!!")
+    puts("WOW")
     #@user = User.find(params[:id])
     @friends = @user.friends
+    puts @friends
     render json: { friends: @friends }, status: :ok
   end
 
   # POST /api/v1/users/:id/friendships: crea una nueva amistad entre dos usuarios
   def create_friendship
     puts("LLAMANDO A USER CONTROLER?!")
-    @user = User.find(params[:id])
+    puts("Debugging general params:")
+    puts(params.inspect)
+    puts("Debugging user!!")
+    # @user = User.find(params[:id]) YA VIENE DE SET USER
+    puts(@user.inspect)
+    puts("Debugging friend:")
     @friend = User.find(params[:friend_id])
-    @bar = Bar.find_by(params[:bar_id])
+    puts(@friend.inspect)
+    puts("Debugging bar:")
+    @bar = Bar.find(params[:bar_id])
+    puts(@bar.inspect)
     @friendship = Friendship.find_by(user: @user, friend: @friend)
     puts("SEARCHED FOR FRIENDSHIP, result: ", @friendship)
     
@@ -111,7 +121,15 @@ class API::V1::UsersController < ApplicationController
     end
     puts("ACTUAL PARAMS:")
     puts(params.inspect)
-    @user = User.find(params[:id])
+    puts("The user is:")
+    puts(params[:user_id])
+    if params[:user_id].nil?
+      @user = User.find(params[:id])
+    else
+      @user = User.find(params[:user_id])
+    end
+    puts @user
+    puts("Fin de set_user")
   end
 
   def user_params
