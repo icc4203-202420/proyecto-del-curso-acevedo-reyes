@@ -37,13 +37,23 @@ if Rails.env.development?
   chile = Country.create(name: 'Chile')
 
   admin = User.create!(
-  first_name: "Victor", 
-  last_name: "Gonzalez", 
-  age: 30, 
-  email: "vicho@gmail.com", 
-  password: "skibidi", 
-  password_confirmation: "skibidi", 
-  handle: "vicho123"
+    first_name: "Victor", 
+    last_name: "Gonzalez", 
+    age: 30, 
+    email: "vicho@gmail.com", 
+    password: "skibidi", 
+    password_confirmation: "skibidi", 
+    handle: "vicho123"
+  )
+
+  lucas = User.create!(
+    first_name: "Lucas",
+    last_name: "Reyes",
+    age: 30,
+    email: "lucasreyes@gmail.com",
+    password: "123456",
+    password_confirmation: "123456",
+    handle: "lucasreyes"
   )
 
 

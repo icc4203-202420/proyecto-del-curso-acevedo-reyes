@@ -68,7 +68,14 @@ const BeerReviews = ({ route }) => {
         const userReview = fetchedBeer.reviews.find(review => review.user.id === currentUserId);
         setUserReview(userReview);
 
-        const otherReviews = fetchedBeer.reviews.filter(review => review.id !== userReview.Id);
+        if (userReview) {
+          const otherReviews = fetchedBeer.reviews.filter(review => review.id !== userReview.Id);
+          setReviews(otherReviews || []);
+        }
+        else {
+          setReviews(fetchedBeer.reviews || []);
+        }
+        //const otherReviews = fetchedBeer.reviews.filter(review => review.id !== userReview.Id);
         setReviews(otherReviews || []);
         
         setAvgRating(fetchedBeer.avg_rating || 0);
@@ -85,11 +92,12 @@ const BeerReviews = ({ route }) => {
   
 
   console.log("Reviews>", reviews);
+  console.log("Beer>", beer);
   console.log("Avg Rating>", avgRating);
   console.log("User Review>", userReview);
 
   if (loading) return <ActivityIndicator size="large" />;
-  if (error) return <Text>Error loading beer reviews.</Text>;
+  //if (error) return <Text>Error loading beer reviews.</Text>;
 
   return (
     <View style={styles.container}>
@@ -103,10 +111,10 @@ const BeerReviews = ({ route }) => {
       <Rating 
         imageSize={20} 
         readonly 
-        startingValue={avgRating} 
+        startingValue={beer.avg_rating} 
         tintColor      = "#f2f2f2"
       />
-      <Text style={styles.avgRating}>Rating: {avgRating.toFixed(2)} ({reviews.length + (userReview ? 1 : 0)} reviews)</Text>
+      <Text style={styles.avgRating}>Rating: {beer.avg_rating.toFixed(2)} ({reviews.length + (userReview ? 1 : 0)} reviews)</Text>
   
       {userLoading ? (
         <ActivityIndicator />

@@ -139,7 +139,7 @@ function LogIn() {
           
           setTimeout(() => {
             navigation.navigate('Home');
-          }, 150); // Redirige a "/" después de 1 segundo
+          }, 10); // Redirige a "/" después de 1 segundo
         }
         catch (error) {
           console.error("Error en el guardado del token:", error);

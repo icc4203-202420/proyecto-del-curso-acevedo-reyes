@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, TextInput, StyleSheet, Text, Button } from 'react-native';
-//import BeersList from '../beers/BeersList';
+import { View, TextInput, StyleSheet, Text } from 'react-native';
+import { Button, Icon } from '@rneui/themed';
 import SearchTabs from '../../components/SearchTabs';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import Feed from '../../components/Feed';
 import { FeedContext } from '../../contexts/FeedContext';
+import { set } from 'date-fns';
 
 // falta hacer que en logout se elimine el push token actual... horribble..
 
@@ -17,7 +18,7 @@ const Home = () => {
   const [showSearchTabs, setShowSearchTabs] = useState(false);
   const inputRef = React.createRef(null);
 
-  const { currentUserId } = useContext(FeedContext);
+  const { currentUserId, setCurrentUserId } = useContext(FeedContext);
 
   console.log("currentUserId en HOME>", currentUserId);
 
@@ -41,6 +42,7 @@ const Home = () => {
       //await AsyncStorage.getItem('user');
       //console.log('User retrieved from AsyncStorage');
       await AsyncStorage.removeItem('user');
+      setCurrentUserId(null);
       console.log('User removed from AsyncStorage');
     } 
     catch (e) {
@@ -72,7 +74,13 @@ const Home = () => {
         <SearchTabs searchKeywords={searchKeywords} />
       ) : (
         <>
-          <Button title="Cerrar Sesión" onPress={handleLogout} />
+          <Button 
+            title="Cerrar Sesión" 
+            onPress={handleLogout} 
+            icon = {<Icon name="logout" />}
+            buttonStyle={styles.logOutButton}
+            containerStyle={styles.buttonContainer}
+          />
           
           <Feed />
         </>
@@ -93,6 +101,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 20,
+  },
+  logOutButton: {
+    backgroundColor: '#FF0000',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
+    width: '60%',
+    alignSelf: 'center'
   },
 });
 

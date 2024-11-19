@@ -174,12 +174,14 @@ function EventDetails() {
             <Icon
               name  = "videocam"
               type  = "material"
-              color = "black"
+              color = "white"
               size  = {24}
             />
           }
-          title      = "Ver y subir Fotos a la Galería!"
-          titleStyle = {{ color: 'black', fontWeight: 'semibold' }}
+          title      = " Ver y subir Fotos a la Galería!"
+          titleStyle = {{ color: 'white', fontWeight: 'semibold' }}
+          buttonStyle={styles.button}
+          containerStyle={styles.buttonContainer}
         />
       </View>
 
@@ -325,6 +327,14 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 16,
     marginLeft: 8,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
 });
 

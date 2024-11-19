@@ -194,6 +194,10 @@ const Feed = () => {
         keyExtractor          = {(item) => `${item.review_id || item.event_picture_id}`}
         renderItem            = {renderFeedItem}
         contentContainerStyle = {styles.list}
+        initialNumToRender    = {4}
+        ListFooterComponent={() => (
+          <View style={{ height: 100 }} />
+        )}
       />
 
       {/* Modal para filtros */}
@@ -359,6 +363,9 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 8,
+  },
+  cancelButton: {
+    backgroundColor: '#FF0000',
   },
 });
 

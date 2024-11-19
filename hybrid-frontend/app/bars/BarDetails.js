@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, Button, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { Button } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
 import { Divider, Icon, Image, Card } from '@rneui/themed';
 import axios from 'axios';
@@ -98,12 +99,6 @@ function BarDetails({ route }) {
               </Text>
             </View>
             
-            <Button
-              title   = "Ver más..."
-              onPress = {() => navigation.navigate('EventDetails', {eventId: event.id})}
-              color   = "#0000ff"
-            />
-            
             <View style={styles.eventDateContainer}>
               <Icon 
                 name  = "today" 
@@ -115,6 +110,16 @@ function BarDetails({ route }) {
                 {formatDate(event.date)}
               </Text>
             </View>
+
+            <Button
+              title   = "Ver más..."
+              onPress = {() => navigation.navigate('EventDetails', {eventId: event.id})}
+              color   = "#0000ff"
+              buttonStyle={styles.button}
+              containerStyle={styles.buttonContainer}
+            />
+            
+            
           
           </Card>
         ))}
@@ -195,6 +200,17 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 10,
+    alignSelf: 'center',
+    width: '60%',
   },
 });
 

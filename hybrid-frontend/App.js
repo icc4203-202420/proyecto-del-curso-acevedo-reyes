@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaView, View, StyleSheet } from 'react-native';
+import { SafeAreaView, View, StyleSheet, ActivityIndicator } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 import LogIn from './app/auth/logindex';
@@ -24,9 +24,10 @@ const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
   //const [currentUserId, setCurrentUserId] = useState(null);
   const navigationRef = useRef(); // Agrega una referencia para la navegación
-
+  
   // Mock para ActionCable en React Native
   if (typeof global.addEventListener !== "function") {
     global.addEventListener = () => {};
@@ -48,23 +49,10 @@ const App = () => {
       else {
         setIsLoggedIn(false);
       }
+      setLoading(false);
     };
     checkAuthentication();
   }, []);
-
-  // obtener el usuario actual
-  //useEffect(() => {
-  //  async function getCurrentUserId() {
-  //    try {
-  //      const currentUserId = await AsyncStorage.getItem('user');
-  //      setCurrentUserId(Math.round(currentUserId));
-  //    } catch (error) {
-  //      console.error(error);
-  //    }
-  //  }
-
-  //  getCurrentUserId();
-  //}, [currentUserId]);
 
   // Configuración de notificaciones
   useEffect(() => {
@@ -101,6 +89,15 @@ const App = () => {
       Notifications.removeNotificationSubscription(responseListener);
     };
   }, []);
+
+  // Muestra un indicador de carga mientras se valida el token
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.centeredContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { Button, Card, Divider, Icon } from '@rneui/themed';
+//import Icon from 'react-native-vector-icons/Entypo';
 import { Rating } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native'; // Importa el hook de navegación
 
@@ -53,7 +54,7 @@ const BeerDetails = ({ route }) => {
     fetchBars();
   }, [beerId]);
 
-  console.log("Beer>", beer);
+  //console.log("Beer>", beer);
 
   const navigation = useNavigation();
   
@@ -66,91 +67,132 @@ const BeerDetails = ({ route }) => {
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error loading beer details</Text>;
 
+  if (!beer) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.noBeerText}>No se encontraron detalles de la cerveza.</Text>
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      {beer ? (
-        <>
-          <Text style={styles.title}>
-            {beer.name}
-          </Text>
-          
-          <View style={styles.ratingContainer}>
-            <Icon 
-              name="pencil"
-              size={24}
-              color="black"
-              onPress={() => navigation.navigate('ReviewBeer', { beerId: beerId })}
-            />
+    <ScrollView style={styles.container}>
+      
+      {/* Header */}
+      <Card containerStyle={styles.card}>
+        <Card.Title style={{fontSize: 20, fontWeight: 'bold'}}>
+          {beer.name}
+        </Card.Title>
+        
+        <Card.Divider />
+        
+        <View style={styles.ratingContainer}>
+          <Icon style={{marginRight: 10}}
+            name="pencil"
+            type="font-awesome"
+            size={28}
+            color="black"
+            onPress={() => navigation.navigate('ReviewBeer', { beerId: beerId })}
+          />
+          <Rating
+            imageSize     = {30}
+            readonly
+            fractions     = {1}
+            startingValue = {beer.avg_rating || 0}
+          />
+        </View>
+        <Text style={styles.ratingText}>
+          Rating promedio: {beer.avg_rating ? beer.avg_rating.toFixed(2) : 'N/A'}
+        </Text>
+      </Card>
 
-            <Rating 
-              imageSize       = {20} 
-              readonly
-              
-              fractions       = "{1}"
-              startingValue   = {beer.avg_rating || 0} 
-              tintColor       = "#f2f2f2"
-            />
-          </View>
+      {/* Beer */}
+      <Card containerStyle={styles.card}>
+        <Text style={styles.detailText}>Estilo: {beer.style}</Text>
+        <Divider />
+        <Text style={styles.detailText}>Porcentaje de Alcohol: {beer.alcohol}</Text>
+        <Divider />
+        {beer.brand.brewery.name && (
+          <Text style={styles.detailText}>Producida por: {beer.brand.brewery.name}</Text>
+        )}
+      </Card>
 
-          <Text style={styles.text}>
-            Rating: {(beer.avg_rating ? beer.avg_rating.toFixed(2) : 'N/A')} 
-          </Text>
-
-          <Text style={styles.text}>
-            Estilo: {beer.style}
-          </Text>
-          
-          <Text style={styles.text}>Porcentaje de Alcohol: {beer.alcohol}</Text>
-          {beer.brand.brewery.name && (
-            <Text style={styles.text}>Producida por: {beer.brand.brewery.name}</Text>
-          )}
-
-          <Text style={styles.text}>
-            Bares que sirven esta cerveza:
-          </Text>
-          {bars.map(bar => (
-            <Text style={styles.text}>
+      {/* Bars */}
+      <Card containerStyle={styles.card}>
+        <Card.Title>Bares que sirven esta cerveza</Card.Title>
+        <Card.Divider />
+        {bars.length > 0 ? (
+          bars.map((bar, index) => (
+            <Text key={index} style={styles.barText}>
               {bar.name}
             </Text>
-          ))}
-          {!bars.length && (
-            <Text style={styles.text}>
-              No hay bares que sirvan esta cerveza.
-            </Text>
-          )}
+          ))
+        ) : (
+          <Text style={styles.noBarsText}>No hay bares que sirvan esta cerveza.</Text>
+        )}
+      </Card>
 
-          <Button title="Reviews de usuarios" onPress={handleSubmit} />
-        </>
-      ) : (
-        <Text>No se encontraron detalles de la cerveza.</Text>
-      )}
-    </View>
+      {/* BeerReviews */}
+      <Button
+        title="Ver Reviews de Usuarios"
+        onPress={handleSubmit}
+        buttonStyle={styles.button}
+        containerStyle={styles.buttonContainer}
+      />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
+    backgroundColor: '#f9f9f9',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 10,
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
+  card: {
+    borderRadius: 10,
+    elevation: 4,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'center',
-    marginBottom: 20,
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  ratingText: {
+    marginTop: 5,
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+  },
+  detailText: {
+    fontSize: 16,
+    marginVertical: 5,
+    color: '#333',
+  },
+  barText: {
+    fontSize: 16,
+    color: '#444',
+    marginBottom: 5,
+  },
+  noBarsText: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+  },
+  noBeerText: {
+    fontSize: 18,
+    color: '#555',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    borderRadius: 10,
+  },
+  buttonContainer: {
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
 });
 
