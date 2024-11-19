@@ -71,7 +71,7 @@ class API::V1::EventPicturesController < ApplicationController
         event_name: @event_picture.event.name,
         bar_name: @event_picture.event.bar.name,
         bar_country: @event_picture.event.bar.address.country.name,
-        picture_id: @event_picture.id,
+        picture_id: @event_picture.id,  # para identificar la imagen en el front
         picture_created_at: @event_picture.created_at,
         picture_description: @event_picture.description,
         picture_image_url: image_url,

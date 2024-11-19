@@ -44,6 +44,7 @@ function BarDetails({ route }) {
       });
   }, [barId]);
 
+  if (!barId) return <Text style={styles.errorText}>Bar ID no existe.</Text>;
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text style={styles.errorText}>Failed to load bar details.</Text>;
 

@@ -191,7 +191,7 @@ const Feed = () => {
       {/* Lista de publicaciones */}
       <FlatList
         data                  = {filteredItems}
-        keyExtractor          = {(item) => `${item.review_id || item.event_picture_id}`}
+        keyExtractor          = {(item) => `${item.review_id || item.picture_id}`}
         renderItem            = {renderFeedItem}
         contentContainerStyle = {styles.list}
         initialNumToRender    = {4}
