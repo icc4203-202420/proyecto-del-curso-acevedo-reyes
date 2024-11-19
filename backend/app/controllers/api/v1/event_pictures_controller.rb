@@ -21,6 +21,8 @@ class API::V1::EventPicturesController < ApplicationController
     @event = Event.find(params[:id])
     @event_pictures = @event.event_pictures
 
+    puts "MOSTRANDO IMAGENES DEL EVENTO CON ID: #{params[:id]}"
+
     event_pictures_with_images = @event_pictures.map do |picture|
       picture.as_json.merge(image_url: url_for(picture.image)) if picture.image.attached?
     end
@@ -37,6 +39,44 @@ class API::V1::EventPicturesController < ApplicationController
       
       puts "LLAMANDO A PUSH NOTIFICATION SERVICE!!!!!!!!!!"
       PushNotificationService.notify_users_about_mention(@event_picture.description, @event_picture.event)
+
+      puts "ENVIANDO A FEED LA IMAGEN DESDE CONTROLADOR!!"
+
+      # Generar la URL de la imagen
+      image_url = url_for(@event_picture.image) if @event_picture.image.attached?
+
+      # Broadcast al feed de los amigos
+      @event_picture.user.friends.each do |friend|
+        ActionCable.server.broadcast("feed_#{friend.id}", 
+        {
+          type: 'event_picture',
+          user_handle: @event_picture.user.handle,
+          event_id: @event_picture.event.id,
+          event_name: @event_picture.event.name,
+          bar_name: @event_picture.event.bar.name,
+          bar_country: @event_picture.event.bar.address.country.name,
+          picture_id: @event_picture.id,
+          picture_created_at: @event_picture.created_at,
+          picture_description: @event_picture.description,
+          picture_image_url: image_url,
+        })
+      end
+
+      # para el mismo usuario que subio la imagen
+      ActionCable.server.broadcast("feed_#{@event_picture.user.id}",
+      {
+        type: 'event_picture',
+        user_handle: @event_picture.user.handle,
+        event_id: @event_picture.event.id,
+        event_name: @event_picture.event.name,
+        bar_name: @event_picture.event.bar.name,
+        bar_country: @event_picture.event.bar.address.country.name,
+        picture_id: @event_picture.id,
+        picture_created_at: @event_picture.created_at,
+        picture_description: @event_picture.description,
+        picture_image_url: image_url,
+      })
+      
 
     else
       render json: @event_picture.errors, status: :unprocessable_entity

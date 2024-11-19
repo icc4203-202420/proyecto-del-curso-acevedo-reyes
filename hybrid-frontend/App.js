@@ -1,78 +1,3 @@
-/*
-import React, { useEffect, useState } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SafeAreaView, View, StyleSheet } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
-
-import FixedBottomNav from './components/FixedBottomNav';
-import LogIn from './app/auth/logindex';
-import SignUp from './app/auth/regindex';
-import Home from './app/home/home';
-import Profile from './app/profile';
-import BeerDetail from './app/beers/BeerDetail';
-import BeerReview from './app/beers/BeerReview';
-import ReviewBeer from './app/beers/ReviewBeer';
-
-const Stack = createNativeStackNavigator();
-
-const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      const token = await SecureStore.getItemAsync('token');
-      console.log('DESDE APP.js:token', token);
-      setIsLoggedIn(!!token); // true si el token existe, false si es nulo
-    };
-    checkAuthentication();
-  }, []);
-
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <View style={styles.container}>
-          
-          <Stack.Navigator 
-            initialRouteName={isLoggedIn ? "Home" : "LogIn"}  
-          >
-            {isLoggedIn ? (
-              // Pantallas para usuarios autenticados con `FixedBottomNav`
-              <Stack.Group>
-                <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="Profile" component={Profile} />
-                <Stack.Screen name="BeerDetail" component={BeerDetail} />
-                <Stack.Screen name="BeerReview" component={BeerReview} />
-                <Stack.Screen name="ReviewBeer" component={ReviewBeer} />
-                
-              </Stack.Group>
-            ) : (
-              // Pantallas de autenticación sin `FixedBottomNav`
-              <Stack.Group>
-                <Stack.Screen name="LogIn" component={LogIn} />
-                <Stack.Screen name="SignUp" component={SignUp} />
-              </Stack.Group>
-            )}
-
-          </Stack.Navigator>
-
-          
-          
-        </View> 
-      </NavigationContainer>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
-*/
-
 import React, { useEffect, useState, useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -92,11 +17,14 @@ import EventDetails from './app/events/EventDetails';
 import EventPictures from './app/events/EventPictures';
 
 import * as Notifications from 'expo-notifications';
+import { FeedProvider } from './contexts/FeedContext';
+//import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  //const [currentUserId, setCurrentUserId] = useState(null);
   const navigationRef = useRef(); // Agrega una referencia para la navegación
 
   // Mock para ActionCable en React Native
@@ -108,6 +36,7 @@ const App = () => {
     global.removeEventListener = () => {};
   }
 
+  // obtener el token del usuario
   useEffect(() => {
     const checkAuthentication = async () => {
       const token = await SecureStore.getItemAsync('token');
@@ -123,6 +52,21 @@ const App = () => {
     checkAuthentication();
   }, []);
 
+  // obtener el usuario actual
+  //useEffect(() => {
+  //  async function getCurrentUserId() {
+  //    try {
+  //      const currentUserId = await AsyncStorage.getItem('user');
+  //      setCurrentUserId(Math.round(currentUserId));
+  //    } catch (error) {
+  //      console.error(error);
+  //    }
+  //  }
+
+  //  getCurrentUserId();
+  //}, [currentUserId]);
+
+  // Configuración de notificaciones
   useEffect(() => {
     // Configuración para manejar la recepción de la notificación
     const receivedListener = Notifications.addNotificationReceivedListener(
@@ -160,25 +104,27 @@ const App = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <NavigationContainer ref={navigationRef}>
-        <View style={styles.container}>
-          <Stack.Navigator 
-            initialRouteName={isLoggedIn ? "Home" : "LogIn"}  
-          >
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Profile" component={Profile} />
-            <Stack.Screen name="BeerDetail" component={BeerDetail} />
-            <Stack.Screen name="BeerReview" component={BeerReview} />
-            <Stack.Screen name="ReviewBeer" component={ReviewBeer} />
-            <Stack.Screen name="LogIn" component={LogIn} />
-            <Stack.Screen name="SignUp" component={SignUp} />
-            <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
-            <Stack.Screen name="BarDetails" component={BarDetails} />
-            <Stack.Screen name="EventDetails" component={EventDetails} />
-            <Stack.Screen name="EventPictures" component={EventPictures} />
-          </Stack.Navigator>
-        </View> 
-      </NavigationContainer>
+      <FeedProvider>
+        <NavigationContainer ref={navigationRef}>
+          <View style={styles.container}>
+            <Stack.Navigator 
+              initialRouteName={isLoggedIn ? "Home" : "LogIn"}  
+            >
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="Profile" component={Profile} />
+              <Stack.Screen name="BeerDetail" component={BeerDetail} />
+              <Stack.Screen name="BeerReview" component={BeerReview} />
+              <Stack.Screen name="ReviewBeer" component={ReviewBeer} />
+              <Stack.Screen name="LogIn" component={LogIn} />
+              <Stack.Screen name="SignUp" component={SignUp} />
+              <Stack.Screen name="ProfileDetails" component={ProfileDetails} />
+              <Stack.Screen name="BarDetails" component={BarDetails} />
+              <Stack.Screen name="EventDetails" component={EventDetails} />
+              <Stack.Screen name="EventPictures" component={EventPictures} />
+            </Stack.Navigator>
+          </View> 
+        </NavigationContainer>
+      </FeedProvider>
     </SafeAreaView>
   );
 };

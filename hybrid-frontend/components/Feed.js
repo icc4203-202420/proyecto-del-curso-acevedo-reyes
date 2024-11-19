@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { subscribeToFeed } from "./SubscribeToFeed";
-import { View, Text, StyleSheet, FlatList, Modal, TouchableOpacity } from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+//import { subscribeToFeed } from "./SubscribeToFeed";
+import { View, Text, Image, StyleSheet, FlatList, Modal, TouchableOpacity } from "react-native";
 import { Button, Input } from '@rneui/themed';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+//import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from '@react-native-picker/picker';
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { FeedContext } from "../contexts/FeedContext";
 
 const Feed = () => {
-  const [feedItems, setFeedItems] = useState([]);
+  //const [feedItems, setFeedItems] = useState([]);
+  const { feedItems } = useContext(FeedContext);
   const [filteredItems, setFilteredItems] = useState([]);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  //const [currentUserId, setCurrentUserId] = useState(null);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [filterCriteria, setFilterCriteria] = useState({
     friend: '',
@@ -22,32 +24,36 @@ const Feed = () => {
   });
   const navigation = useNavigation();
 
-  // Obtener usuario actual
   useEffect(() => {
-    async function getCurrentUserId() {
-      try {
-        const currentUserId = await AsyncStorage.getItem('user');
-        setCurrentUserId(Math.round(currentUserId));
-      } catch (error) {
-        console.error(error);
-      }
-    }
+    setFilteredItems(feedItems);
+  }, [feedItems]);
 
-    getCurrentUserId();
-  }, []);
+  // Obtener usuario actual
+  //useEffect(() => {
+  //  async function getCurrentUserId() {
+  //    try {
+  //      const currentUserId = await AsyncStorage.getItem('user');
+  //      setCurrentUserId(Math.round(currentUserId));
+  //    } catch (error) {
+  //      console.error(error);
+  //    }
+  //  }
+
+  //  getCurrentUserId();
+  //}, []);
 
   // Suscribirse al feed
-  useEffect(() => {
-    if (!currentUserId) return;
+  //useEffect(() => {
+  //  if (!currentUserId) return;
 
-    const unsubscribe = subscribeToFeed(currentUserId, (message) => {
-      console.log("Received message from FeedChannel>", message);
-      setFeedItems((prevItems) => [message, ...prevItems]);
-      setFilteredItems((prevItems) => [message, ...prevItems]);
-    });
+  //  const unsubscribe = subscribeToFeed(currentUserId, (message) => {
+  //    console.log("Received message from FeedChannel>", message);
+  //    setFeedItems((prevItems) => [message, ...prevItems]);
+  //   setFilteredItems((prevItems) => [message, ...prevItems]);
+  //  });
 
-    return unsubscribe;
-  }, [currentUserId]);
+  //  return unsubscribe;
+  //}, [currentUserId]);
 
   // Aplicar filtros
   const applyFilter = () => {
@@ -232,13 +238,13 @@ const Feed = () => {
 
           <View style={styles.modalButtons}>
             <Button
-              title="Aplicar Filtros"
-              onPress={applyFilter}
+              title   = "Aplicar Filtros"
+              onPress = {applyFilter}
             />
             <Button
-              title="Cancelar"
-              onPress={() => setFilterModalVisible(false)}
-              buttonStyle={styles.cancelButton}
+              title       = "Cancelar"
+              onPress     = {() => setFilterModalVisible(false)}
+              buttonStyle = {styles.cancelButton}
             />
           </View>
           
@@ -255,6 +261,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
+    alignSelf: 'center',
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
@@ -333,6 +340,14 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: '#ff4d4d',
+  },
+  imageContainer: {
+    marginBottom: 8,
+    alignItems: 'center',
+  },
+  eventImage: {
+    width: '100%',
+    height: 200,
   },
 });
 

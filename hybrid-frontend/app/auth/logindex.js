@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import { Avatar } from 'react-native-paper'; // Asegúrate de instalar react-native-paper
 import { Formik } from 'formik';
@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { registerForPushNotificationsAsync } from '../../utils/Notifications';
 import * as Notifications from 'expo-notifications';
-
+import { FeedContext } from "../../contexts/FeedContext";
 
 
 (async () => {
@@ -46,7 +46,8 @@ function LogIn() {
   const [serverError, setServerError] = React.useState('');
   const [loginSuccess, setLoginSuccess] = React.useState(false);
   const navigation = useNavigation(); // Obtén el objeto de navegación
-  
+  const { setCurrentUserId } = useContext(FeedContext);
+
   const handleBack = () => {
     // Maneja la redirección aquí
     navigation.navigate('SignUp')
@@ -91,6 +92,8 @@ function LogIn() {
         try {
           await AsyncStorage.setItem('user', receivedUser);
           console.log('user recibido!', receivedUser);
+          setCurrentUserId(parseInt(receivedUser));
+          console.log('User ID seteado en FeedContext:', receivedUser);
         }
         catch (error) {
           console.error("Error en el guardado del usuario:", error);
